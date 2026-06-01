@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/IntegrationTests/">
+    <Project Path="IntegrationTests/InventoryManagement.IntegrationTests/InventoryManagement.IntegrationTests.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/InventoryManagement.Application.Tests/InventoryManagement.Application.Tests.csproj" />
     <Project Path="Tests/InventoryManagement.Domain.Tests/InventoryManagement.Domain.Tests.csproj" />
