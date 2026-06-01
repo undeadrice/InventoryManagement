@@ -1,4 +1,5 @@
-﻿using InventoryManagement.Application.Pipeline;
+﻿using FluentValidation;
+using InventoryManagement.Application.Pipeline;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +11,11 @@ public static class DIRegistrations
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(DIRegistrations).Assembly));
 
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+
+        services.AddValidatorsFromAssembly(typeof(DIRegistrations).Assembly);
+
         return services;
     }
 }

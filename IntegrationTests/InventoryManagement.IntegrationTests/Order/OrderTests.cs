@@ -231,7 +231,7 @@ public class OrderTests : IAsyncLifetime
     [Fact]
     public async Task CreateOrder_WithInsufficientStock_ReturnsBadRequest()
     {
-        // Arrange – product has only 5 in stock, order requests 10
+        // Arrange
         var customerId = await CreateCustomerAsync();
         var productId = await CreateProductAsync("Low Stock Item", "Limited stock", 15.00m, 5);
 
@@ -256,13 +256,13 @@ public class OrderTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/orders", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateOrder_WithNoItems_ReturnsBadRequest()
     {
-        // Arrange – order must contain at least one item
+        // Arrange
         var customerId = await CreateCustomerAsync();
 
         var command = new CreateOrderCommand(customerId, []);
@@ -287,7 +287,7 @@ public class OrderTests : IAsyncLifetime
         var orderResponse = await _client.PostAsJsonAsync("/api/orders", command);
         orderResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        // Assert – verify stock was decremented by checking a second order would fail if it exceeds remaining stock
+        // Assert
         var overStockCommand = new CreateOrderCommand(customerId, [new OrderItemRequest(productId, 14)]);
         var overStockResponse = await _client.PostAsJsonAsync("/api/orders", overStockCommand);
         overStockResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
