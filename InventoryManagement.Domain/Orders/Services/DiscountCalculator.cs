@@ -84,20 +84,19 @@ public class DiscountCalculator : IDiscountCalculator
         {
             return false;
         }
-        
 
-        var novemberFirst = new DateTime(date.Year, 11, 1);
-        var fridaysCount = 0;
+        var thursdayCount = 0;
 
         for (int day = 1; day <= 30; day++)
         {
             var currentDay = new DateTime(date.Year, 11, day);
-            if (currentDay.DayOfWeek == DayOfWeek.Friday)
+            if (currentDay.DayOfWeek == DayOfWeek.Thursday)
             {
-                fridaysCount++;
-                if (fridaysCount == 4 && date.Day == day)
+                thursdayCount++;
+                if (thursdayCount == 4)
                 {
-                    return true;
+                    var blackFriday = currentDay.AddDays(1);
+                    return date.Date == blackFriday.Date;
                 }
             }
         }
