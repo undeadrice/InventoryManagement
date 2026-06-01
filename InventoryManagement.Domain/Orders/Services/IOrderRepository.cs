@@ -1,4 +1,4 @@
-using InventoryManagement.Domain.Orders;
+using InventoryManagement.Domain.Orders.Entities;
 using System.Linq.Expressions;
 
 namespace InventoryManagement.Domain.Orders.Services;

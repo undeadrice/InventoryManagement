@@ -1,4 +1,4 @@
-using InventoryManagement.Domain.Orders;
+using InventoryManagement.Domain.Orders.Entities;
 using InventoryManagement.Domain.Orders.Services;
 using InventoryManagement.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;

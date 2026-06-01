@@ -1,6 +1,6 @@
 ﻿using InventoryManagement.Domain.Orders.Exceptions;
 
-namespace InventoryManagement.Domain.Orders;
+namespace InventoryManagement.Domain.Orders.Entities;
 
 public class Order
 {

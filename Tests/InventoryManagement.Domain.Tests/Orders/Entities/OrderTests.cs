@@ -1,9 +1,9 @@
 using FluentAssertions;
-using InventoryManagement.Domain.Orders;
+using InventoryManagement.Domain.Orders.Entities;
 using InventoryManagement.Domain.Orders.Exceptions;
 using Xunit;
 
-namespace InventoryManagement.Domain.Tests.Orders;
+namespace InventoryManagement.Domain.Tests.Orders.Entities;
 
 public class OrderTests
 {

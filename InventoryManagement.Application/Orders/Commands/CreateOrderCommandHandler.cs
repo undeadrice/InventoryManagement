@@ -1,5 +1,5 @@
 using InventoryManagement.Domain.Customers.Services;
-using InventoryManagement.Domain.Orders;
+using InventoryManagement.Domain.Orders.Entities;
 using InventoryManagement.Domain.Orders.Exceptions;
 using InventoryManagement.Domain.Orders.Services;
 using InventoryManagement.Domain.Products.Services;

@@ -1,5 +1,5 @@
 ﻿using InventoryManagement.Domain.Customers;
-using InventoryManagement.Domain.Orders;
+using InventoryManagement.Domain.Orders.Entities;
 using InventoryManagement.Domain.Products.Entities;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,5 +1,5 @@
 using InventoryManagement.Application.Orders.TransferObjects;
-using InventoryManagement.Domain.Orders;
+using InventoryManagement.Domain.Orders.Entities;
 
 namespace InventoryManagement.Application.Orders.Mapping;
 
