@@ -21,7 +21,8 @@ public class RestaurantConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(50);
 
         builder.Property(r => r.Price)
-            .IsRequired();
+            .IsRequired()
+            .HasPrecision(18, 2);
 
         builder.Property(r => r.Stock)
             .IsRequired();

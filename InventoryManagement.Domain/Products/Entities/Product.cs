@@ -29,32 +29,42 @@ public class Product
         {
             throw new ProductNameRequiredException();
         }
-     
+
         if (name.Length > 50)
         {
             throw new ProductNameTooLongException();
         }
-          
+
         if (string.IsNullOrWhiteSpace(description))
         {
             throw new ProductDescriptionRequiredException();
         }
-           
+
         if (description.Length > 50)
         {
             throw new ProductDescriptionTooLongException();
         }
-         
+
         if (price <= 0)
         {
             throw new ProductPriceInvalidException();
         }
-         
+
         if (stock < 0)
         {
             throw new ProductStockInvalidException();
         }
 
         return new Product(Guid.NewGuid(), name, description, price, stock);
+    }
+
+    public void DecreaseStock(int quantity)
+    {
+        if (quantity < 0)
+        {
+            throw new ProductStockInvalidException();
+        }
+
+        Stock -= quantity;
     }
 }

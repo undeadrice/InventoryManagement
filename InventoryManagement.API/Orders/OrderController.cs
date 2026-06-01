@@ -1,15 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using InventoryManagement.API.Orders.Mappings;
+using InventoryManagement.Application.Orders.Commands;
+using InventoryManagement.Application.Orders.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
-namespace InventoryManagement.API.Orders
+namespace InventoryManagement.API.Orders;
+
+[ApiController]
+[Route("api/[controller]")]
+public class OrderController(IMediator mediator) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class OrderController : ControllerBase
+    [HttpPost]
+    public async Task<IActionResult> CreateOrder(CreateOrderCommand command)
     {
-        [HttpPost]
-        public IActionResult CreateOrder()
-        {
-            return Created();
-        }
+        var result = await mediator.Send(command);
+        return Ok(new { id = result });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetOrders()
+    {
+        var result = await mediator.Send(new GetOrdersQuery());
+        return Ok(result.Select(i => i.MapToOrderResponse()));
+    }
+
+    [HttpGet("{orderId}")]
+    public async Task<IActionResult> GetOrderById(Guid orderId)
+    {
+        var result = await mediator.Send(new GetOrderByIdQuery(orderId));
+        return Ok(result.MapToOrderResponse());
     }
 }
