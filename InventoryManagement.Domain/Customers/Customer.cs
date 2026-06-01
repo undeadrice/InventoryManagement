@@ -1,9 +1,19 @@
-﻿namespace InventoryManagement.Domain.Customers
-{
-    public class Customer
-    {
-        public Guid Id { get; set; }
+﻿namespace InventoryManagement.Domain.Customers;
 
-        public CustomerLocation Location { get; set; }
+public class Customer
+{
+    public Guid Id { get; private set; }
+
+    public CustomerLocation Location { get; private set; }
+
+    private Customer(Guid id, CustomerLocation location)
+    {
+        Id = id;
+        Location = location;
+    }
+
+    public static Customer Create(CustomerLocation location)
+    {
+        return new Customer(Guid.NewGuid(), location);
     }
 }

@@ -1,4 +1,5 @@
-﻿using InventoryManagement.Domain.Products.Entities;
+﻿using InventoryManagement.Domain.Customers;
+using InventoryManagement.Domain.Products.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryManagement.Persistence;
@@ -6,6 +7,8 @@ namespace InventoryManagement.Persistence;
 public class PersistenceDbContext(DbContextOptions<PersistenceDbContext> options) : DbContext(options)
 {
     public DbSet<Product> Products { get; set; }
+
+    public DbSet<Customer> Customers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

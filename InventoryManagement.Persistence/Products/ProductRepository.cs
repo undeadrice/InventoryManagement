@@ -35,7 +35,7 @@ namespace InventoryManagement.Persistence.Products
             return await persistenceDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IReadOnlyCollection<Product>> GetAll(Expression<Func<Product, bool>>? filter = null, CancellationToken token)
+        public async Task<IReadOnlyCollection<Product>> GetAll(CancellationToken token, Expression<Func<Product, bool>>? filter = null)
         {
             if (filter == null)
             {

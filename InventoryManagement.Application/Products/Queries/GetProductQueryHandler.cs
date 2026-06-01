@@ -10,7 +10,7 @@ namespace InventoryManagement.Application.Products.Queries;
     {
         public async Task<IReadOnlyCollection<ProductDto>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
         {
-            var restaurants = await productRepository.GetAll(x => true);
+            var restaurants = await productRepository.GetAll(cancellationToken, x => true);
             return restaurants.Select(x => x.MapToProductDto()).ToList();
         }
     }

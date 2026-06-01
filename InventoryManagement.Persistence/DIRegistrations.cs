@@ -1,5 +1,7 @@
-﻿using InventoryManagement.Domain.Persistence;
+﻿using InventoryManagement.Domain.Customers.Services;
+using InventoryManagement.Domain.Persistence;
 using InventoryManagement.Domain.Products.Services;
+using InventoryManagement.Persistence.Customers;
 using InventoryManagement.Persistence.Products;
 using InventoryManagement.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ public static class DIRegistrations
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
 
         return services;
     }

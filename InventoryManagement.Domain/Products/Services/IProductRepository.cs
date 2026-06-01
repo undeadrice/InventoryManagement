@@ -13,6 +13,6 @@ public interface IProductRepository
 
     Task<Product?> FindById(Guid id, CancellationToken token = default);
 
-    Task<IReadOnlyCollection<Product>> GetAll(Expression<Func<Product, bool>>? filter = null, CancellationToken token = default);
+    Task<IReadOnlyCollection<Product>> GetAll(CancellationToken token, Expression<Func<Product, bool>>? filter = null);
 }
 
