@@ -1,4 +1,3 @@
-using InventoryManagement.API.Customers.Mappings;
 using InventoryManagement.Application.Customers.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,7 @@ namespace InventoryManagement.API.Customers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CustomerController(IMediator mediator) : ControllerBase
+public class CustomersController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> CreateCustomer(CreateCustomerCommand command)

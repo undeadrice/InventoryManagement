@@ -8,7 +8,7 @@ namespace InventoryManagement.API.Products
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController(IMediator mediator) : ControllerBase
+    public class ProductsController(IMediator mediator) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> GetProducts()

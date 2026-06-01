@@ -8,7 +8,7 @@ public class DiscountCalculator : IDiscountCalculator
 
     public DiscountCalculator(Func<DateTime>? getCurrentDate = null)
     {
-        _getCurrentDate = getCurrentDate ?? (() => DateTime.UtcNow);
+        _getCurrentDate = getCurrentDate ?? (() => DateTime.UtcNow); // other solution would be to use IDateTimeService, but this is simpler for now and doesn't require additional dependencies
     }
 
     public decimal CalculateDiscount(decimal basePrice, int totalQuantity, CustomerLocation location, DateTime orderDate)
