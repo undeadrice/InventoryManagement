@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace InventoryManagement.Persistence.Products
 {
-    public class RestaurantRepository(PersistenceDbContext persistenceDbContext) : IProductRepository
+    public class ProductRepository(PersistenceDbContext persistenceDbContext) : IProductRepository
     {
         public async Task Add(Product product, CancellationToken token)
         {
