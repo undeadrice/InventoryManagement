@@ -23,6 +23,8 @@ public class Product
         Stock = stock;
     }
 
+    public Product() { }
+
     public static Product Create(string name, string description, decimal price, int stock)
     {
         if (string.IsNullOrWhiteSpace(name))

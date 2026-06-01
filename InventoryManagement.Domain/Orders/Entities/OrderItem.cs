@@ -12,6 +12,7 @@ public class OrderItem
 
     public decimal UnitPrice { get; private set; }
 
+    public OrderItem() { }
     private OrderItem(Guid id, Guid orderId, Guid productId, int quantity, decimal unitPrice)
     {
         Id = id;

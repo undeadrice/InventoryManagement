@@ -14,6 +14,8 @@ public class Order
 
     public DateTime CreatedAt { get; private set; }
 
+    public Order() { }
+
     private Order(Guid id, Guid customerId, List<OrderItem> orderItems, decimal finalPrice)
     {
         Id = id;

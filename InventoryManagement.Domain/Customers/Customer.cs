@@ -6,6 +6,8 @@ public class Customer
 
     public CustomerLocation Location { get; private set; }
 
+    public Customer() { }
+
     private Customer(Guid id, CustomerLocation location)
     {
         Id = id;
