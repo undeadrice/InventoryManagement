@@ -4,4 +4,5 @@
   <Project Path="InventoryManagement.Domain/InventoryManagement.Domain.csproj" />
   <Project Path="InventoryManagement.Infrastructure/InventoryManagement.Infrastructure.csproj" />
   <Project Path="InventoryManagement.Persistence/InventoryManagement.Persistence.csproj" />
+  <Project Path="InventoryManagement.Shared/InventoryManagement.Shared.csproj" />
 </Solution>
