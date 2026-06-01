@@ -9,6 +9,12 @@ public class UnitOfWork(PersistenceDbContext dbContext) : IUnitOfWork
 
     public async Task StartTransaction()
     {
+        // For integration test purposes
+        if (dbContext.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            return;
+        }
+
         _transaction = await dbContext.Database.BeginTransactionAsync();
     }
 

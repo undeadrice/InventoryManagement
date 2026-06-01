@@ -25,7 +25,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
     public async Task GetProducts_WhenNoProductsExist_ReturnsEmptyList()
     {
         // Act
-        var response = await _client.GetAsync("/api/product");
+        var response = await _client.GetAsync("/api/products");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -40,11 +40,11 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
     {
         // Arrange – create a product first
         var command = new CreateProductCommand("Widget", "A small widget", 9.99m, 100);
-        var createResponse = await _client.PostAsJsonAsync("/api/product", command);
+        var createResponse = await _client.PostAsJsonAsync("/api/products", command);
         createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Act
-        var getResponse = await _client.GetAsync("/api/product");
+        var getResponse = await _client.GetAsync("/api/products");
 
         // Assert
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -71,12 +71,12 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
 
         foreach (var cmd in commands)
         {
-            var r = await _client.PostAsJsonAsync("/api/product", cmd);
+            var r = await _client.PostAsJsonAsync("/api/products", cmd);
             r.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         // Act
-        var getResponse = await _client.GetAsync("/api/product");
+        var getResponse = await _client.GetAsync("/api/products");
 
         // Assert
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -97,7 +97,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand("Gadget", "A cool gadget", 49.99m, 50);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -113,7 +113,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand("Freebie", "Zero price item", 0m, 10);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -126,7 +126,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand("Negative", "Negative price item", -5.00m, 10);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -139,7 +139,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand("Overdrawn", "Negative stock item", 10.00m, -1);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -152,7 +152,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand("", "Some description", 10.00m, 5);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -166,7 +166,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand(longName, "Valid description", 10.00m, 5);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -179,7 +179,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand("Valid Name", "", 10.00m, 5);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -193,7 +193,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand("Valid Name", longDescription, 10.00m, 5);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -206,7 +206,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
         var command = new CreateProductCommand("Out of Stock Item", "No stock yet", 5.00m, 0);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/product", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

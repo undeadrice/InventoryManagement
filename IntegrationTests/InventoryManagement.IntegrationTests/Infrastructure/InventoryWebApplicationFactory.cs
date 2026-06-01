@@ -1,27 +1,47 @@
 using InventoryManagement.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InventoryManagement.IntegrationTests.Infrastructure;
 
 public class InventoryWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private readonly string _dbName = "InventoryTestDb_" + Guid.NewGuid();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services =>
+        builder.ConfigureTestServices(services =>
         {
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<PersistenceDbContext>));
+            var toRemove = services
+                .Where(d =>
+                    d.ServiceType == typeof(PersistenceDbContext) ||
+                    d.ServiceType == typeof(DbContextOptions<PersistenceDbContext>) ||
+                    d.ServiceType == typeof(DbContextOptions) ||
+                    d.ServiceType.FullName?.StartsWith("Microsoft.EntityFrameworkCore") == true &&
+                    d.ServiceType.FullName.Contains("PersistenceDbContext"))
+                .ToList();
 
-            if (descriptor != null)
+            foreach (var d in toRemove)
             {
-                services.Remove(descriptor);
+                services.Remove(d);
+            }
+
+            var optionsConfigType = typeof(IDbContextOptionsConfiguration<PersistenceDbContext>);
+            var optionsConfigs = services
+                .Where(d => d.ServiceType == optionsConfigType)
+                .ToList();
+
+            foreach (var d in optionsConfigs)
+            {
+                services.Remove(d);
             }
 
             services.AddDbContext<PersistenceDbContext>(options =>
-                options.UseInMemoryDatabase("InventoryManagementTestDb_" + Guid.NewGuid()));
+                options.UseInMemoryDatabase(_dbName));
         });
 
         builder.UseEnvironment("Development");
