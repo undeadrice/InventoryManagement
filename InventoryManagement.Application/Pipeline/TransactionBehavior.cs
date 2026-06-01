@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using InventoryManagement.Domain.Persistence;
+using MediatR;
 
 namespace InventoryManagement.Application.Pipeline
 {
