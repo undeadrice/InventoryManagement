@@ -314,6 +314,7 @@ public class OrderTests : IAsyncLifetime
 
         var order = await getResponse.Content.ReadFromJsonAsync<OrderResponse>();
 
+        // Assert
         order!.FinalPrice.Should().BeGreaterThan(0);
     }
 }
