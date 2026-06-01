@@ -21,4 +21,4 @@ Clean architecture with DDD approach
 - For discount calculation I've assumed that the discount is applied after the localization multiplier is applied
 
 # Trade-offs
-- Because I've went for transaction approach the UnitOfWork has an integration test dedicated case (that's because integraion tests use in memory database which doesnt support transactions)
+- Because I've went for transaction approach the UnitOfWork has an integration test dedicated case (that's because integration tests use in memory database which doesnt support transactions)
