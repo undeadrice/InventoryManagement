@@ -1,5 +1,5 @@
 # InventoryManagement
-Since it was more clear for me, I've decided to put in CRUD for Customers so i can easily fetch the customer localization.
+Since it was more clear for me, I've decided to put in CRUD for Customers so i can easily fetch the customer localization. (This is the only flow thats not covered by tests)
 
 Tech stack:
 EntityFramework with MSSQL
