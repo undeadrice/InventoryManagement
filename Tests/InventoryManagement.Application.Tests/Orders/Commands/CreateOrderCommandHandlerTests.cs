@@ -44,7 +44,9 @@ public class CreateOrderCommandHandlerTests
 
         _customerRepository.GetById(customer.Id, Arg.Any<CancellationToken>()).Returns(customer);
         _productRepository.GetById(product.Id, Arg.Any<CancellationToken>()).Returns(product);
-        _discountCalculator.CalculateDiscount(Arg.Any<decimal>(), Arg.Any<int>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>()).Returns(2999.97m);
+        _discountCalculator
+            .CalculateDiscount(Arg.Any<IEnumerable<OrderLineItem>>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>())
+            .Returns(2999.97m);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -72,7 +74,9 @@ public class CreateOrderCommandHandlerTests
         _customerRepository.GetById(customer.Id, Arg.Any<CancellationToken>()).Returns(customer);
         _productRepository.GetById(product1.Id, Arg.Any<CancellationToken>()).Returns(product1);
         _productRepository.GetById(product2.Id, Arg.Any<CancellationToken>()).Returns(product2);
-        _discountCalculator.CalculateDiscount(Arg.Any<decimal>(), Arg.Any<int>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>()).Returns(1099.97m);
+        _discountCalculator
+            .CalculateDiscount(Arg.Any<IEnumerable<OrderLineItem>>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>())
+            .Returns(1099.97m);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
@@ -84,7 +88,7 @@ public class CreateOrderCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WithValidCommand_ShouldPassCorrectBaseTotalAndQuantityToDiscountCalculator()
+    public async Task Handle_WithValidCommand_ShouldPassCorrectLineItemsAndLocationToDiscountCalculator()
     {
         // Arrange
         var customer = Customer.Create(CustomerLocation.EUROPE);
@@ -93,13 +97,19 @@ public class CreateOrderCommandHandlerTests
 
         _customerRepository.GetById(customer.Id, Arg.Any<CancellationToken>()).Returns(customer);
         _productRepository.GetById(product.Id, Arg.Any<CancellationToken>()).Returns(product);
-        _discountCalculator.CalculateDiscount(Arg.Any<decimal>(), Arg.Any<int>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>()).Returns(500m);
+        _discountCalculator
+            .CalculateDiscount(Arg.Any<IEnumerable<OrderLineItem>>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>())
+            .Returns(500m);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _discountCalculator.Received(1).CalculateDiscount(500m, 5, CustomerLocation.EUROPE, Arg.Any<DateTime>());
+        _discountCalculator.Received(1).CalculateDiscount(
+            Arg.Is<IEnumerable<OrderLineItem>>(items =>
+                items.Single().UnitPrice == 100m && items.Single().Quantity == 5),
+            CustomerLocation.EUROPE,
+            Arg.Any<DateTime>());
     }
 
     [Fact]
@@ -112,7 +122,9 @@ public class CreateOrderCommandHandlerTests
 
         _customerRepository.GetById(customer.Id, Arg.Any<CancellationToken>()).Returns(customer);
         _productRepository.GetById(product.Id, Arg.Any<CancellationToken>()).Returns(product);
-        _discountCalculator.CalculateDiscount(Arg.Any<decimal>(), Arg.Any<int>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>()).Returns(999.99m);
+        _discountCalculator
+            .CalculateDiscount(Arg.Any<IEnumerable<OrderLineItem>>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>())
+            .Returns(999.99m);
 
         Order? capturedOrder = null;
         await _orderRepository.Add(Arg.Do<Order>(o => capturedOrder = o), Arg.Any<CancellationToken>());
@@ -190,7 +202,9 @@ public class CreateOrderCommandHandlerTests
 
         _customerRepository.GetById(customer.Id, Arg.Any<CancellationToken>()).Returns(customer);
         _productRepository.GetById(product.Id, Arg.Any<CancellationToken>()).Returns(product);
-        _discountCalculator.CalculateDiscount(Arg.Any<decimal>(), Arg.Any<int>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>()).Returns(4999.95m);
+        _discountCalculator
+            .CalculateDiscount(Arg.Any<IEnumerable<OrderLineItem>>(), Arg.Any<CustomerLocation>(), Arg.Any<DateTime>())
+            .Returns(4999.95m);
 
         // Act
         var act = async () => await _handler.Handle(command, CancellationToken.None);
