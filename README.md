@@ -9,6 +9,8 @@ Tech stack:
 - FluentAssertions
 - NSubstitute
 
+You can find database connection string setting in UI projects appsettings
+
 Architecture used:
 Clean architecture with DDD approach
 
