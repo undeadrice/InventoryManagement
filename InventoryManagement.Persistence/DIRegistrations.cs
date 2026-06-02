@@ -24,9 +24,6 @@ public static class DIRegistrations
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
-
-        services.AddScoped<IDiscountCalculator, DiscountCalculator>();
-
         return services;
     }
 }

@@ -18,8 +18,6 @@ public class CreateOrderCommandHandler(
         var customer = await customerRepository.GetById(request.CustomerId, cancellationToken);
 
         var orderItems = new List<OrderItem>();
-        decimal baseTotal = 0;
-        int totalQuantity = 0;
 
         foreach (var item in request.Items)
         {
@@ -33,14 +31,12 @@ public class CreateOrderCommandHandler(
             var orderItem = OrderItem.Create(product.Id, item.Quantity, product.Price);
             orderItems.Add(orderItem);
 
-            baseTotal += product.Price * item.Quantity;
-            totalQuantity += item.Quantity;
-
             product.DecreaseStock(item.Quantity);
             await productRepository.Update(product, cancellationToken);
         }
 
-        var finalPrice = discountCalculator.CalculateDiscount(baseTotal, totalQuantity, customer.Location, DateTime.UtcNow);
+        var lineItems = orderItems.Select(i => new OrderLineItem(i.UnitPrice, i.Quantity));
+        var finalPrice = discountCalculator.CalculateDiscount(lineItems, customer.Location, DateTime.UtcNow);
         var order = Order.Create(customer.Id, orderItems, finalPrice);
 
         foreach (var item in order.OrderItems)

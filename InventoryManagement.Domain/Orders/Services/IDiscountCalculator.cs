@@ -2,7 +2,9 @@ using InventoryManagement.Domain.Customers;
 
 namespace InventoryManagement.Domain.Orders.Services;
 
+public record OrderLineItem(decimal UnitPrice, int Quantity);
+
 public interface IDiscountCalculator
 {
-    decimal CalculateDiscount(decimal basePrice, int totalQuantity, CustomerLocation location, DateTime orderDate);
+    decimal CalculateDiscount(IEnumerable<OrderLineItem> items, CustomerLocation location, DateTime orderDate);
 }

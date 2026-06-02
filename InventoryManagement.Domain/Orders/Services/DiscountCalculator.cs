@@ -4,48 +4,73 @@ namespace InventoryManagement.Domain.Orders.Services;
 
 public class DiscountCalculator : IDiscountCalculator
 {
-    private readonly Func<DateTime> _getCurrentDate;
-
-    public DiscountCalculator(Func<DateTime>? getCurrentDate = null)
+    // The date is injectable so seasonal discounts can be controlled in tests.
+    public DiscountCalculator()
     {
-        _getCurrentDate = getCurrentDate ?? (() => DateTime.UtcNow); // other solution would be to use IDateTimeService, but this is simpler for now and doesn't require additional dependencies
     }
 
-    public decimal CalculateDiscount(decimal basePrice, int totalQuantity, CustomerLocation location, DateTime orderDate)
+    public decimal CalculateDiscount(IEnumerable<OrderLineItem> items, CustomerLocation location, DateTime orderDate)
     {
-        var applicableDiscounts = new List<(string Name, decimal Percentage)>();
+        var lineItems = items.ToList();
+
+        if (lineItems.Count == 0)
+        {
+            return 0;
+        }
+
+        var locationMultiplier = GetLocationMultiplier(location);
+
+        var adjustedItems = lineItems
+            .Select(i => new OrderLineItem(i.UnitPrice * locationMultiplier, i.Quantity))
+            .ToList();
+
+        var totalQuantity = adjustedItems.Sum(i => i.Quantity);
+        var adjustedTotal = adjustedItems.Sum(i => i.UnitPrice * i.Quantity);
+
+        var discounts = new List<(string Name, decimal Percentage)>();
 
         var volumeDiscount = GetVolumeDiscount(totalQuantity);
         if (volumeDiscount > 0)
         {
-            applicableDiscounts.Add(("Volume", volumeDiscount));
+            discounts.Add(("Volume", volumeDiscount));
         }
 
-        var seasonalDiscount = GetSeasonalDiscount(orderDate);
+        var (seasonalName, seasonalDiscount) = GetSeasonalDiscount(orderDate);
         if (seasonalDiscount > 0)
         {
-            applicableDiscounts.Add(("Seasonal", seasonalDiscount));
+            discounts.Add((seasonalName, seasonalDiscount));
         }
 
-        var highestDiscount = applicableDiscounts.Any()
-            ? applicableDiscounts.OrderByDescending(d => d.Percentage).First().Percentage
-            : 0;
+        if (!discounts.Any())
+        {
+            return adjustedTotal;
+        }
 
-        var locationMultiplier = GetLocationMultiplier(location);
-        var priceWithLocationAdjustment = basePrice * locationMultiplier;
+        var best = discounts.OrderByDescending(d => d.Percentage).First();
 
-        var discountAmount = priceWithLocationAdjustment * (highestDiscount / 100);
-        var finalPrice = priceWithLocationAdjustment - discountAmount;
+        if (best.Name == "Holiday")
+        {
+            return CalculateHolidayDiscount(adjustedItems, adjustedTotal);
+        }
 
-        return finalPrice;
+        return adjustedTotal * (1 - best.Percentage / 100m);
     }
 
-    private decimal GetVolumeDiscount(int quantity)
+    private static decimal CalculateHolidayDiscount(List<OrderLineItem> adjustedItems, decimal adjustedTotal)
+    {
+        var mostExpensive = adjustedItems.MaxBy(i => i.UnitPrice)!;
+        var lineTotalOfMostExpensive = mostExpensive.UnitPrice * mostExpensive.Quantity;
+        var discountOnMostExpensive = lineTotalOfMostExpensive * 0.15m;
+        return adjustedTotal - discountOnMostExpensive;
+    }
+
+    private static decimal GetVolumeDiscount(int quantity)
     {
         if (quantity >= 50)
         {
             return 30;
         }
+
 
         if (quantity >= 10)
         {
@@ -60,25 +85,22 @@ public class DiscountCalculator : IDiscountCalculator
         return 0;
     }
 
-    private decimal GetSeasonalDiscount(DateTime orderDate)
+    private static (string Name, decimal Percentage) GetSeasonalDiscount(DateTime orderDate)
     {
-        var currentDate = _getCurrentDate();
-
-        if (IsBlackFriday(currentDate))
+        if (IsBlackFriday(orderDate))
         {
-            return 25;
+            return ("BlackFriday", 25);
         }
-        
 
-        if (IsPolishHoliday(currentDate))
+        if (IsPolishHoliday(orderDate))
         {
-            return 15;
+            return ("Holiday", 15);
         }
-           
-        return 0;
+
+        return (string.Empty, 0);
     }
 
-    private bool IsBlackFriday(DateTime date)
+    private static bool IsBlackFriday(DateTime date)
     {
         if (date.Month != 11)
         {
@@ -86,17 +108,15 @@ public class DiscountCalculator : IDiscountCalculator
         }
 
         var thursdayCount = 0;
-
         for (int day = 1; day <= 30; day++)
         {
-            var currentDay = new DateTime(date.Year, 11, day);
-            if (currentDay.DayOfWeek == DayOfWeek.Thursday)
+            var current = new DateTime(date.Year, 11, day);
+            if (current.DayOfWeek == DayOfWeek.Thursday)
             {
                 thursdayCount++;
                 if (thursdayCount == 4)
                 {
-                    var blackFriday = currentDay.AddDays(1);
-                    return date.Date == blackFriday.Date;
+                    return date.Date == current.AddDays(1).Date;
                 }
             }
         }
@@ -104,27 +124,23 @@ public class DiscountCalculator : IDiscountCalculator
         return false;
     }
 
-    private bool IsPolishHoliday(DateTime date)
-    {
-        return (date.Month == 1 && date.Day == 1) ||   // New Year's Day
-               (date.Month == 1 && date.Day == 6) ||   // Epiphany
-               (date.Month == 5 && date.Day == 1) ||   // Labour Day
-               (date.Month == 5 && date.Day == 3) ||   // Constitution Day
-               (date.Month == 8 && date.Day == 15) ||  // Assumption of Mary
-               (date.Month == 11 && date.Day == 1) ||  // All Saints' Day
-               (date.Month == 11 && date.Day == 11) || // Independence Day
-               (date.Month == 12 && date.Day == 25) || // Christmas Day
-               (date.Month == 12 && date.Day == 26);   // Second Day of Christmas
-    }
+    private static bool IsPolishHoliday(DateTime date) =>
+        (date.Month == 1 && date.Day == 1) || // New Year's Day
+        (date.Month == 1 && date.Day == 6) || // Epiphany
+        (date.Month == 5 && date.Day == 1) || // Labour Day
+        (date.Month == 5 && date.Day == 3) || // Constitution Day
+        (date.Month == 8 && date.Day == 15) || // Assumption of Mary
+        (date.Month == 11 && date.Day == 1) || // All Saints' Day
+        (date.Month == 11 && date.Day == 11) || // Independence Day
+        (date.Month == 12 && date.Day == 25) || // Christmas Day
+        (date.Month == 12 && date.Day == 26);   // Second Day of Christmas
 
-    private decimal GetLocationMultiplier(CustomerLocation location)
-    {
-        return location switch
+    private static decimal GetLocationMultiplier(CustomerLocation location) =>
+        location switch
         {
             CustomerLocation.US => 1.0m,
-            CustomerLocation.EUROPE => 1.15m, // 15% VAT
-            CustomerLocation.ASIA => 1.05m,   // 5% logistics cost
+            CustomerLocation.EUROPE => 1.15m,
+            CustomerLocation.ASIA => 1.05m,
             _ => 1.0m
         };
-    }
 }
