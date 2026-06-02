@@ -26,4 +26,4 @@ Clean architecture with DDD approach
 
 # Trade-offs
 - Because I've went for transaction approach the UnitOfWork has an integration test dedicated flow (that's because integration tests use in memory database which doesnt support transactions).
-- When launching integration tests, the application will assume today is the date that the users operating system is set to. We could mock the the actual date by implementing IDateTimeProvider and setting it up in InventoryWebApplicationFactory. Current solution limits what we can assert on because some tests would be flaky and possibly return invalid result because of holidays.
+- When launching integration tests, the application will assume today is the date that the users operating system is set to. We could mock the the actual date by implementing IDateTimeProvider and setting it up in InventoryWebApplicationFactory however i decided to skip this for simplicity. Current solution limits what we can assert on because some tests would be flaky and possibly return invalid result because of holidays.
