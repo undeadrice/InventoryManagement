@@ -38,7 +38,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
     [Fact]
     public async Task GetProducts_AfterCreatingProduct_ReturnsProductInList()
     {
-        // Arrange – create a product first
+        // Arrange
         var command = new CreateProductCommand("Widget", "A small widget", 9.99m, 100);
         var createResponse = await _client.PostAsJsonAsync("/api/products", command);
         createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -109,7 +109,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
     [Fact]
     public async Task CreateProduct_WithZeroPrice_ReturnsBadRequest()
     {
-        // Arrange – price must be > 0
+        // Arrange
         var command = new CreateProductCommand("Freebie", "Zero price item", 0m, 10);
 
         // Act
@@ -135,7 +135,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
     [Fact]
     public async Task CreateProduct_WithNegativeStock_ReturnsBadRequest()
     {
-        // Arrange – stock must be >= 0
+        // Arrange
         var command = new CreateProductCommand("Overdrawn", "Negative stock item", 10.00m, -1);
 
         // Act
@@ -161,7 +161,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
     [Fact]
     public async Task CreateProduct_WithNameExceeding50Characters_ReturnsBadRequest()
     {
-        // Arrange – name max length is 50
+        // Arrange
         var longName = new string('A', 51);
         var command = new CreateProductCommand(longName, "Valid description", 10.00m, 5);
 
@@ -188,7 +188,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
     [Fact]
     public async Task CreateProduct_WithDescriptionExceeding50Characters_ReturnsBadRequest()
     {
-        // Arrange – description max length is 50
+        // Arrange
         var longDescription = new string('D', 51);
         var command = new CreateProductCommand("Valid Name", longDescription, 10.00m, 5);
 
@@ -202,7 +202,7 @@ public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
     [Fact]
     public async Task CreateProduct_WithZeroStock_ReturnsOk()
     {
-        // Arrange – stock of 0 is valid
+        // Arrange
         var command = new CreateProductCommand("Out of Stock Item", "No stock yet", 5.00m, 0);
 
         // Act
