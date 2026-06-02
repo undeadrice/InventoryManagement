@@ -7,24 +7,26 @@ namespace InventoryManagement.Domain.Tests.Orders.Services;
 
 public class DiscountCalculatorTests
 {
-    private static DiscountCalculator CreateWithDate(DateTime currentDate)
-        => new DiscountCalculator(() => currentDate);
+    private static readonly DiscountCalculator Calculator = new DiscountCalculator();
 
-    private static readonly DateTime NeutralDate = new DateTime(2024, 6, 15); // Saturday, June 15
+    private static readonly DateTime NeutralDate = new DateTime(2024, 6, 15);
+
+
+    private static IEnumerable<OrderLineItem> SingleItem(decimal unitPrice, int quantity = 1)
+        => [new OrderLineItem(unitPrice, quantity)];
+
+    private static IEnumerable<OrderLineItem> Items(params (decimal price, int quantity)[] lines)
+        => lines.Select(l => new OrderLineItem(l.price, l.quantity));
 
     #region No Discount Scenarios
 
     [Fact]
     public void CalculateDiscount_WithUSLocationAndNoDiscounts_ShouldReturnBasePrice()
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.US, NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.US, NeutralDate);
 
-        // Assert
-        result.Should().Be(100);
+        result.Should().Be(100m);
     }
 
     [Theory]
@@ -33,14 +35,10 @@ public class DiscountCalculatorTests
     [InlineData(4)]
     public void CalculateDiscount_WithQuantityBelowVolumeThreshold_ShouldApplyNoVolumeDiscount(int quantity)
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, quantity, CustomerLocation.US, NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, quantity), CustomerLocation.US, NeutralDate);
 
-        // Assert
-        result.Should().Be(100);
+        result.Should().Be(100 * quantity);
     }
 
     #endregion
@@ -53,14 +51,9 @@ public class DiscountCalculatorTests
     [InlineData(9)]
     public void CalculateDiscount_WithQuantityBetween5And9_ShouldApply10PercentVolumeDiscount(int quantity)
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, quantity), CustomerLocation.US, NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, quantity, CustomerLocation.US, NeutralDate);
-
-        // Assert
-        result.Should().Be(90);
+        result.Should().Be(100m * quantity * 0.90m);
     }
 
     [Theory]
@@ -69,14 +62,9 @@ public class DiscountCalculatorTests
     [InlineData(49)]
     public void CalculateDiscount_WithQuantityBetween10And49_ShouldApply20PercentVolumeDiscount(int quantity)
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, quantity), CustomerLocation.US, NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, quantity, CustomerLocation.US, NeutralDate);
-
-        // Assert
-        result.Should().Be(80);
+        result.Should().Be(100 * quantity * 0.80m);
     }
 
     [Theory]
@@ -85,14 +73,10 @@ public class DiscountCalculatorTests
     [InlineData(200)]
     public void CalculateDiscount_WithQuantity50OrMore_ShouldApply30PercentVolumeDiscount(int quantity)
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, quantity, CustomerLocation.US, NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, quantity), CustomerLocation.US, NeutralDate);
 
-        // Assert
-        result.Should().Be(70);
+        result.Should().Be(100 * quantity * 0.70m);
     }
 
     #endregion
@@ -102,73 +86,49 @@ public class DiscountCalculatorTests
     [Fact]
     public void CalculateDiscount_WithUSLocation_ShouldApplyNoLocationMultiplier()
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.US, NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.US, NeutralDate);
-
-        // Assert
         result.Should().Be(100);
     }
 
     [Fact]
     public void CalculateDiscount_WithEuropeLocation_ShouldApply15PercentVATMultiplier()
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.EUROPE, NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.EUROPE, NeutralDate);
-
-        // Assert
         result.Should().Be(115);
     }
 
     [Fact]
     public void CalculateDiscount_WithAsiaLocation_ShouldApply5PercentLogisticsMultiplier()
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.ASIA, NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.ASIA, NeutralDate);
 
-        // Assert
         result.Should().Be(105);
     }
 
-    // 100 * 1.15 = 115, then 20% off -> 115 * 0.80 = 92
+    // 100 * 1.15 = 115, then 20% off total (10 units) › 115 * 10 * 0.80 = 920
     [Fact]
     public void CalculateDiscount_WithEuropeLocationAndVolumeDiscount_ShouldApplyMultiplierBeforeDiscount()
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, 10), CustomerLocation.EUROPE, NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 10, CustomerLocation.EUROPE, NeutralDate);
-
-        // Assert
-        result.Should().Be(92m);
+        result.Should().Be(920);
     }
 
-    // 100 * 1.05 = 105, then 20% off -> 105 * 0.80 = 84
+    // 100 * 1.05 = 105, then 20% off total (10 units) › 105 * 10 * 0.80 = 840
     [Fact]
     public void CalculateDiscount_WithAsiaLocationAndVolumeDiscount_ShouldApplyMultiplierBeforeDiscount()
     {
-        // Arrange
-        var calculator = CreateWithDate(NeutralDate);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, 10), CustomerLocation.ASIA, NeutralDate);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 10, CustomerLocation.ASIA, NeutralDate);
-
-        // Assert
-        result.Should().Be(84m);
+        result.Should().Be(840);
     }
 
     #endregion
 
-    #region Seasonal Discounts â€” Polish Holidays
+    #region Seasonal Discounts — Polish Holidays (15% off most expensive product)
 
     [Theory]
     [InlineData(1, 1)]   // New Year's Day
@@ -180,46 +140,72 @@ public class DiscountCalculatorTests
     [InlineData(11, 11)] // Independence Day
     [InlineData(12, 25)] // Christmas Day
     [InlineData(12, 26)] // Second Day of Christmas
-    public void CalculateDiscount_OnPolishHoliday_ShouldApply15PercentSeasonalDiscount(int month, int day)
+    public void CalculateDiscount_OnPolishHolidaySingleProduct_ShouldApply15PercentToThatProduct(int month, int day)
     {
-        // Arrange
         var holiday = new DateTime(2024, month, day);
-        var calculator = CreateWithDate(holiday);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.US, holiday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.US, holiday);
 
-        // Assert
-        result.Should().Be(85m);
+        result.Should().Be(85);
+    }
+
+    // Multi-product order: 15% applies ONLY to the most expensive product's line total.
+    // Products: $200 × 1 (most expensive), $50 × 2
+    // Total before discount = 200 + 100 = 300
+    // Holiday discount = 15% × (200 × 1) = 30
+    // Final = 300 - 30 = 270
+    [Fact]
+    public void CalculateDiscount_OnPolishHolidayMultipleProducts_ShouldApply15PercentOnlyToMostExpensiveProduct()
+    {
+        var holiday = new DateTime(2024, 1, 1); // New Year's Day
+
+        var result = Calculator.CalculateDiscount(
+            Items((200m, 1), (50m, 2)),
+            CustomerLocation.US,
+            holiday);
+
+        result.Should().Be(270);
+    }
+
+    // Most expensive product has multiple units — 15% applies to the full line (unit × qty).
+    // Products: $100 × 3 (most expensive unit price, line = 300), $40 × 2 (line = 80)
+    // Total = 380
+    // Holiday discount = 15% × 300 = 45
+    // Final = 380 - 45 = 335
+    [Fact]
+    public void CalculateDiscount_OnPolishHolidayMostExpensiveHasMultipleUnits_ShouldApply15PercentToFullLineTotal()
+    {
+        var holiday = new DateTime(2024, 5, 1); // Labour Day
+
+        var result = Calculator.CalculateDiscount(
+            Items((100m, 3), (40m, 2)),
+            CustomerLocation.US,
+            holiday);
+
+        result.Should().Be(335);
     }
 
     #endregion
 
-    #region Seasonal Discounts â€” Black Friday
+    #region Seasonal Discounts — Black Friday (25% off entire order)
 
     [Fact]
-    public void CalculateDiscount_OnBlackFriday2024_ShouldApply25PercentSeasonalDiscount()
+    public void CalculateDiscount_OnBlackFriday2024_ShouldApply25PercentToEntireOrder()
     {
         var blackFriday = new DateTime(2024, 11, 29);
-        var calculator = CreateWithDate(blackFriday);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.US, blackFriday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.US, blackFriday);
 
-        // Assert
         result.Should().Be(75);
     }
 
     [Fact]
-    public void CalculateDiscount_OnBlackFriday2023_ShouldApply25PercentSeasonalDiscount()
+    public void CalculateDiscount_OnBlackFriday2023_ShouldApply25PercentToEntireOrder()
     {
         var blackFriday = new DateTime(2023, 11, 24);
-        var calculator = CreateWithDate(blackFriday);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.US, blackFriday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.US, blackFriday);
 
-        // Assert
         result.Should().Be(75);
     }
 
@@ -227,111 +213,123 @@ public class DiscountCalculatorTests
     public void CalculateDiscount_OnFridayInNovemberThatIsNotBlackFriday_ShouldNotApplyBlackFridayDiscount()
     {
         var thirdFriday = new DateTime(2024, 11, 15);
-        var calculator = CreateWithDate(thirdFriday);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.US, thirdFriday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.US, thirdFriday);
 
-        // Assert
         result.Should().Be(100);
+    }
+
+    // Products: $200 × 1, $50 × 2 › total = 300, 25% off › 225
+    [Fact]
+    public void CalculateDiscount_OnBlackFridayMultipleProducts_ShouldApply25PercentToEntireOrder()
+    {
+
+        var blackFriday = new DateTime(2024, 11, 29);
+
+        var result = Calculator.CalculateDiscount(
+            Items((200m, 1), (50m, 2)),
+            CustomerLocation.US,
+            blackFriday);
+
+        result.Should().Be(225);
     }
 
     #endregion
 
-    #region Discount Priority â€” Only Highest Applies
+    #region Discount Priority — Only Highest Applies
 
-    // Polish holiday gives 15%, quantity 50 gives 30% â†’ 30% wins
+    // Polish holiday gives 15% (holiday, on most expensive), quantity 50 gives 30% (full order) › 30% wins
+    // 50 units at $100 = $5000 base; volume 30% › $3500
     [Fact]
     public void CalculateDiscount_WhenVolumeDiscountHigherThanSeasonal_ShouldApplyVolumeDiscount()
     {
-        // Arrange
-        var holiday = new DateTime(2024, 1, 1);
-        var calculator = CreateWithDate(holiday);
+        var holiday = new DateTime(2024, 1, 1); // New Year's Day
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 50, CustomerLocation.US, holiday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, 50), CustomerLocation.US, holiday);
 
-        // Assert
-        result.Should().Be(70);
+        result.Should().Be(3500);
     }
 
-    //  Black Friday gives 25%, quantity 5 gives 10% â†’ 25% wins
+    // Black Friday gives 25%, quantity 5 gives 10% › 25% wins
+    // 5 units at $100 = $500 base; Black Friday 25% › $375
     [Fact]
     public void CalculateDiscount_WhenSeasonalDiscountHigherThanVolume_ShouldApplySeasonalDiscount()
     {
-        // Arrange
         var blackFriday = new DateTime(2024, 11, 29);
-        var calculator = CreateWithDate(blackFriday);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 5, CustomerLocation.US, blackFriday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, 5), CustomerLocation.US, blackFriday);
 
-        // Assert
-        result.Should().Be(75);
+        result.Should().Be(375);
     }
 
-    // Polish holiday gives 15%, quantity 5 gives 10% â†’ 15% wins (higher)
+    // Polish holiday gives 15% (on most expensive item), quantity 5 gives 10% (on full order)
+    // 15% > 10%, so holiday wins — and it applies only to the most expensive product.
+    // Single product: 5 units × $100 = $500 total; holiday takes 15% of most expensive line ($500) › saves $75 › $425
+    // Holiday wins (15% > 10%); applied to only the most expensive product line = 5×100 = 500 › 15% off = 75 saved › 425
     [Fact]
-    public void CalculateDiscount_WhenBothDiscountsAreEqual_ShouldApplyThatDiscountOnce()
+    public void CalculateDiscount_WhenHolidayDiscountHigherThanVolume_ShouldApplyHolidayDiscount()
     {
-        // Arrange
-        var holiday = new DateTime(2024, 5, 1);
-        var calculator = CreateWithDate(holiday);
+        var holiday = new DateTime(2024, 5, 1); // Labour Day
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 5, CustomerLocation.US, holiday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, 5), CustomerLocation.US, holiday);
 
-        // Assert
-        result.Should().Be(85);
+        result.Should().Be(425);
     }
 
-    // Black Friday gives 25%, quantity 50 gives 30% â†’ 30% wins
+    // Black Friday gives 25%, quantity 50 gives 30% › 30% wins
+    // 50 units × $100 = $5000; volume 30% › $3500
     [Fact]
     public void CalculateDiscount_WhenBlackFridayAndHighVolumeDiscount_ShouldApplyHighestDiscount()
     {
-        // Arrange
         var blackFriday = new DateTime(2024, 11, 29);
-        var calculator = CreateWithDate(blackFriday);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 50, CustomerLocation.US, blackFriday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m, 50), CustomerLocation.US, blackFriday);
 
-        // Assert
-        result.Should().Be(70);
+        result.Should().Be(3500);
     }
 
     #endregion
 
     #region Combined Location + Discount
 
-    // 100 * 1.15 = 115, then 25% off â†’ 115 * 0.75 = 86.25
+    // 100 * 1.15 = 115 (Europe), then Black Friday 25% off › 115 * 0.75 = 86.25
     [Fact]
     public void CalculateDiscount_WithEuropeLocationOnBlackFriday_ShouldApplyMultiplierThenDiscount()
     {
-        // Arrange
         var blackFriday = new DateTime(2024, 11, 29);
-        var calculator = CreateWithDate(blackFriday);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.EUROPE, blackFriday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.EUROPE, blackFriday);
 
-        // Assert
         result.Should().Be(86.25m);
     }
 
-    // 100 * 1.05 = 105, then 15% off â†’ 105 * 0.85 = 89.25
+    // 100 * 1.05 = 105 (Asia), holiday 15% off most expensive (only item) › 105 * 0.85 = 89.25
     [Fact]
     public void CalculateDiscount_WithAsiaLocationOnPolishHoliday_ShouldApplyMultiplierThenDiscount()
     {
-        // Arrange
         var holiday = new DateTime(2024, 12, 25); // Christmas
-        var calculator = CreateWithDate(holiday);
 
-        // Act
-        var result = calculator.CalculateDiscount(100m, 1, CustomerLocation.ASIA, holiday);
+        var result = Calculator.CalculateDiscount(SingleItem(100m), CustomerLocation.ASIA, holiday);
 
-        // Assert
         result.Should().Be(89.25m);
+    }
+
+    // Europe + holiday + multi-product:
+    // Products: $200 × 1, $50 × 2
+    // After Europe multiplier: $230 × 1, $57.5 × 2 › total = $345
+    // Holiday 15% on most expensive line ($230 × 1 = $230) › saves $34.5
+    // Final = 345 - 34.5 = 310.5
+    [Fact]
+    public void CalculateDiscount_WithEuropeLocationOnHolidayMultipleProducts_ShouldApplyMultiplierThenHolidayOnMostExpensive()
+    {
+        var holiday = new DateTime(2024, 1, 1); // New Year's Day
+
+        var result = Calculator.CalculateDiscount(
+            Items((200m, 1), (50m, 2)),
+            CustomerLocation.EUROPE,
+            holiday);
+
+        result.Should().Be(310.5m);
     }
 
     #endregion
