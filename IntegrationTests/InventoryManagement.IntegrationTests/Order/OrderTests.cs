@@ -72,8 +72,8 @@ public class OrderTests : IAsyncLifetime
             var command = new CreateOrderCommand(customerId, [new OrderItemRequest(productId, 1)]);
             var r = await _client.PostAsJsonAsync("/api/orders", command);
             r.StatusCode.Should().Be(HttpStatusCode.OK);
-            var body = await r.Content.ReadFromJsonAsync<Dictionary<string, Guid>>();
-            orderIds.Add(body!["id"]);
+            var orderId = await r.Content.ReadFromJsonAsync<Guid>();
+            orderIds.Add(orderId);
         }
 
         // Act
@@ -98,8 +98,7 @@ public class OrderTests : IAsyncLifetime
         var createResponse = await _client.PostAsJsonAsync("/api/orders", command);
         createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var body = await createResponse.Content.ReadFromJsonAsync<Dictionary<string, Guid>>();
-        var orderId = body!["id"];
+        var orderId = await createResponse.Content.ReadFromJsonAsync<Guid>();
 
         // Act
         var getResponse = await _client.GetAsync($"/api/orders/{orderId}");
@@ -144,9 +143,8 @@ public class OrderTests : IAsyncLifetime
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var body = await response.Content.ReadFromJsonAsync<Dictionary<string, Guid>>();
-        body.Should().ContainKey("id");
-        body!["id"].Should().NotBeEmpty();
+        var orderId = await response.Content.ReadFromJsonAsync<Guid>();
+        orderId.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -259,8 +257,7 @@ public class OrderTests : IAsyncLifetime
         var createResponse = await _client.PostAsJsonAsync("/api/orders", command);
         createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var body = await createResponse.Content.ReadFromJsonAsync<Dictionary<string, Guid>>();
-        var orderId = body!["id"];
+        var orderId = await createResponse.Content.ReadFromJsonAsync<Guid>();
 
         var getResponse = await _client.GetAsync($"/api/orders/{orderId}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);

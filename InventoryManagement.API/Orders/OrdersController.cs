@@ -14,7 +14,7 @@ public class OrdersController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> CreateOrder(CreateOrderCommand command)
     {
         var result = await mediator.Send(command);
-        return Ok(new { id = result });
+        return Ok(result);
     }
 
     [HttpGet]
