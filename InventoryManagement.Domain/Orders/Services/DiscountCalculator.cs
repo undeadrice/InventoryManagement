@@ -4,7 +4,6 @@ namespace InventoryManagement.Domain.Orders.Services;
 
 public class DiscountCalculator : IDiscountCalculator
 {
-    // The date is injectable so seasonal discounts can be controlled in tests.
     public DiscountCalculator()
     {
     }
