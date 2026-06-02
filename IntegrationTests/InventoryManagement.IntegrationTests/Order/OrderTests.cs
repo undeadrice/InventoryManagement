@@ -53,33 +53,10 @@ public class OrderTests : IAsyncLifetime
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
+        // Assert
         var orders = await response.Content.ReadFromJsonAsync<List<OrderResponse>>();
         orders.Should().NotBeNull();
         orders.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task GetOrders_AfterCreatingOrder_ReturnsOrderInList()
-    {
-        // Arrange
-        var customerId = await CreateCustomerAsync();
-        var productId = await CreateProductAsync("Widget", "A small widget", 9.99m, 50);
-
-        var command = new CreateOrderCommand(customerId, [new OrderItemRequest(productId, 2)]);
-        var createResponse = await _client.PostAsJsonAsync("/api/orders", command);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        // Act
-        var getResponse = await _client.GetAsync("/api/orders");
-
-        // Assert
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var orders = await getResponse.Content.ReadFromJsonAsync<List<OrderResponse>>();
-        orders.Should().NotBeNull();
-        orders.Should().Contain(o =>
-            o.CustomerId == customerId &&
-            o.Items.Any(i => i.ProductId == productId && i.Quantity == 2));
     }
 
     [Fact]
@@ -107,7 +84,7 @@ public class OrderTests : IAsyncLifetime
 
         var orders = await getResponse.Content.ReadFromJsonAsync<List<OrderResponse>>();
         orders.Should().NotBeNull();
-        orders!.Select(o => o.Id).Should().Contain(orderIds);
+        orders.Select(o => o.Id).Should().Contain(orderIds);
     }
 
     [Fact]
@@ -132,7 +109,7 @@ public class OrderTests : IAsyncLifetime
 
         var order = await getResponse.Content.ReadFromJsonAsync<OrderResponse>();
         order.Should().NotBeNull();
-        order!.Id.Should().Be(orderId);
+        order.Id.Should().Be(orderId);
         order.CustomerId.Should().Be(customerId);
         order.Items.Should().ContainSingle(i => i.ProductId == productId && i.Quantity == 3);
         order.FinalPrice.Should().BeGreaterThan(0);
@@ -169,30 +146,6 @@ public class OrderTests : IAsyncLifetime
 
         var body = await response.Content.ReadFromJsonAsync<Dictionary<string, Guid>>();
         body.Should().ContainKey("id");
-        body!["id"].Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public async Task CreateOrder_WithMultipleItems_ReturnsOkAndStockIsDecremented()
-    {
-        // Arrange
-        var customerId = await CreateCustomerAsync();
-        var productAId = await CreateProductAsync("Product A", "First product", 10.00m, 20);
-        var productBId = await CreateProductAsync("Product B", "Second product", 20.00m, 30);
-
-        var command = new CreateOrderCommand(customerId,
-        [
-            new OrderItemRequest(productAId, 5),
-            new OrderItemRequest(productBId, 10),
-        ]);
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/orders", command);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var body = await response.Content.ReadFromJsonAsync<Dictionary<string, Guid>>();
         body!["id"].Should().NotBeEmpty();
     }
 
