@@ -20,7 +20,7 @@ Clean architecture with DDD approach
 - Application layer is the coordinator of domain. This is where our use cases (commands/queries and handlers) are.
 - Persistence layer is basic EF stuff and UoW / Repositories implementation.
 - Infrastructure layer is not used, but could be used for eg. dynamicaly fetching holidays i quess.
-- UI layer lets clients talk with our application.
+- Api layer lets clients talk with our application.
 
 # Assumptions
 - The validation and transactions starting/commiting takes place in MediatR pipeline.
