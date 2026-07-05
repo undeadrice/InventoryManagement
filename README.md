@@ -1,31 +1,37 @@
+This project is a sample implementation of an inventory and order management system built with ASP.NET Core using Clean Architecture and CQRS principles.
+
+It demonstrates how to structure a modular backend system with clear separation of concerns between domain logic, application workflows, persistence, and API exposure. The system supports product and order management with business rules around stock handling, pricing, and discount application.
+
+# Key Features
+Product management (create and list products)
+Order processing with stock validation and automatic stock updates
+Business rules for pricing and discount calculation
+Customer-aware pricing adjustments based on location
+Rule-based discount engine with priority handling (non-stackable discounts)
+Basic CRUD support for customer data (used for localization context)
+
+# Architecture & Design
+The solution follows Clean Architecture with a Domain-Driven Design approach:
+
+Domain Layer – Core business entities and rules
+Application Layer – CQRS-based use cases implemented with MediatR
+Persistence Layer – EF Core implementation with repository and unit of work patterns
+API Layer – REST endpoints exposing application functionality
+Infrastructure Layer – Reserved for external integrations (not heavily utilized)
+
+Cross-cutting concerns such as validation and transaction handling are implemented via MediatR pipeline behaviors.
+
+# Tech Stack
+ASP.NET Core
+Entity Framework Core (MSSQL)
+MediatR (CQRS)
+FluentValidation
+xUnit
+FluentAssertions
+NSubstitute
+
+# Testing
+The project includes unit and integration tests for core business logic and critical flows, with special handling for transactional behavior and deterministic test execution where needed.
+
 # Notes
-Since it was more clear for me, I've decided to put in CRUD for Customers so i can easily fetch the customer localization. (This is the only flow thats not covered by tests).
-
-All endpoints have /api prefix in route eg https://localhost:7047/api/orders
-
-Tech stack:
-- EntityFramework with MSSQL
-- MediatR to implement CQRS
-- FluentValidation
-- XUnit
-- FluentAssertions
-- NSubstitute
-
-You can find database connection string setting in Web projects appsettings
-
-Architecture used:
-Clean architecture with DDD approach
-
-- Domain layer contains all business entities with logic / validation.
-- Application layer is the coordinator of domain. This is where our use cases (commands/queries and handlers) are.
-- Persistence layer is basic EF stuff and UoW / Repositories implementation.
-- Infrastructure layer is not used, but could be used for eg. dynamicaly fetching holidays i quess.
-- Api layer lets clients talk with our application.
-
-# Assumptions
-- The validation and transactions starting/commiting takes place in MediatR pipeline.
-- For discount calculation I've assumed that the discount is applied after the localization multiplier is applied.
-
-# Trade-offs
-- Because I've went for transaction approach the UnitOfWork has an integration test dedicated flow (that's because integration tests use in memory database which doesnt support transactions).
-- When launching integration tests, the application will assume today is the date that the users operating system is set to. We could mock the the actual date by implementing IDateTimeProvider and setting it up in InventoryWebApplicationFactory however i decided to skip this for simplicity. Current solution limits what we can assert on because some tests would be flaky and possibly return invalid result because of holidays.
+The system assumes a fixed set of business rules for discounts, holidays, and pricing adjustments to keep the domain logic self-contained and predictable. Some simplifications were made around time-dependent logic and external integrations to maintain test stability and focus on core architecture.
