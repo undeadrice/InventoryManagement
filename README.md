@@ -22,13 +22,13 @@ Infrastructure Layer – Reserved for external integrations (not heavily utilize
 Cross-cutting concerns such as validation and transaction handling are implemented via MediatR pipeline behaviors.
 
 # Tech Stack
-ASP.NET Core
-Entity Framework Core (MSSQL)
-MediatR (CQRS)
-FluentValidation
-xUnit
-FluentAssertions
-NSubstitute
+- ASP.NET Core
+- Entity Framework Core (MSSQL)
+- MediatR (CQRS)
+- FluentValidation
+- xUnit
+- FluentAssertions
+- NSubstitute
 
 # Testing
 The project includes unit and integration tests for core business logic and critical flows, with special handling for transactional behavior and deterministic test execution where needed.
