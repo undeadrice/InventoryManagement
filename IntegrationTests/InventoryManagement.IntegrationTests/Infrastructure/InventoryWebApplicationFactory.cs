@@ -58,15 +58,8 @@ public class InventoryWebApplicationFactory : WebApplicationFactory<Program>
 
     public async Task DeleteDatabase()
     {
-        try
-        {
-            using var scope = Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<PersistenceDbContext>();
-            await dbContext.Database.EnsureDeletedAsync();
-        }
-        finally
-        {
-            await base.DisposeAsync();
-        }
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<PersistenceDbContext>();
+        await dbContext.Database.EnsureDeletedAsync();
     }
 }
