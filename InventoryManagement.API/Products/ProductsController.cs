@@ -10,10 +10,17 @@ namespace InventoryManagement.API.Products
     [Route("api/[controller]")]
     public class ProductsController(IMediator mediator) : ControllerBase
     {
-        [HttpGet]
+        [HttpGet] // Dapper - lightweight read
         public async Task<IActionResult> GetProducts()
         {
             var result = await mediator.Send(new GetProductsQuery());
+            return Ok(result.Select(i => i.MapToProductResponse()));
+        }
+
+        [HttpGet("legacy")] // EF Core - loads full aggregate
+        public async Task<IActionResult> GetProductsLegacy()
+        {
+            var result = await mediator.Send(new GetProductsLegacyQuery());
             return Ok(result.Select(i => i.MapToProductResponse()));
         }
 
