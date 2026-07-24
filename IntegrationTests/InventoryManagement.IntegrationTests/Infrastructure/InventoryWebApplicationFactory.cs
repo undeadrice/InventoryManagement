@@ -10,7 +10,7 @@ namespace InventoryManagement.IntegrationTests.Infrastructure;
 
 public class InventoryWebApplicationFactory : WebApplicationFactory<Program>
 {
-    private readonly string _dbName = "InventoryTestDb_" + Guid.NewGuid();
+    private readonly string _dbName = "InventoryTestDb_" + Guid.NewGuid().ToString("N");
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -40,10 +40,33 @@ public class InventoryWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(d);
             }
 
+            var connectionString = $"Server=(localdb)\\mssqllocaldb;Database={_dbName};Trusted_Connection=True;MultipleActiveResultSets=true";
+
             services.AddDbContext<PersistenceDbContext>(options =>
-                options.UseInMemoryDatabase(_dbName));
+                options.UseSqlServer(connectionString));
         });
 
         builder.UseEnvironment("Development");
+    }
+
+    public async Task CreateDatabase()
+    {
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<PersistenceDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+    }
+
+    public async Task DeleteDatabase()
+    {
+        try
+        {
+            using var scope = Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<PersistenceDbContext>();
+            await dbContext.Database.EnsureDeletedAsync();
+        }
+        finally
+        {
+            await base.DisposeAsync();
+        }
     }
 }
