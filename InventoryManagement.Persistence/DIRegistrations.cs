@@ -1,4 +1,5 @@
-﻿using InventoryManagement.Domain.Customers.Services;
+﻿using InventoryManagement.Application.Orders.Services;
+using InventoryManagement.Domain.Customers.Services;
 using InventoryManagement.Domain.Orders.Services;
 using InventoryManagement.Domain.Persistence;
 using InventoryManagement.Domain.Products.Services;
@@ -24,6 +25,9 @@ public static class DIRegistrations
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
+
+        services.AddScoped<IOrderReadRepository, OrderReadRepository>();
+
         return services;
     }
 }
