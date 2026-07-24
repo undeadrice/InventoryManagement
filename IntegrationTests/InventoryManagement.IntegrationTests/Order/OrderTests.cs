@@ -11,10 +11,16 @@ using Xunit;
 
 namespace InventoryManagement.IntegrationTests.Order;
 
-public class OrderTests : IAsyncLifetime
+public class OrderTests : IClassFixture<InventoryWebApplicationFactory>, IAsyncLifetime
 {
-    private readonly InventoryWebApplicationFactory _factory = new();
+    private readonly InventoryWebApplicationFactory _factory;
+
     private HttpClient _client = null!;
+
+    public OrderTests(InventoryWebApplicationFactory factory)
+    {
+        _factory = factory;
+    }
 
     public async Task InitializeAsync()
     {
@@ -24,7 +30,6 @@ public class OrderTests : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        _client.Dispose();
         await _factory.DeleteDatabase();
     }
 
