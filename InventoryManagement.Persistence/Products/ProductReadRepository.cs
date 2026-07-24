@@ -1,4 +1,3 @@
-using Dapper;
 using InventoryManagement.Application.Products.Services;
 using InventoryManagement.Application.Products.TransferObjects;
 using Microsoft.EntityFrameworkCore;
@@ -9,17 +8,10 @@ public class ProductReadRepository(PersistenceDbContext dbContext) : IProductRea
 {
     public async Task<IReadOnlyCollection<ProductDto>> GetAll(CancellationToken cancellationToken)
     {
-        var connection = dbContext.Database.GetDbConnection();
-
-        var rows = await connection.QueryAsync<ProductDto>(
-            new CommandDefinition(
-                commandText: """
-                    SELECT Id, Name, Description, Price, Stock
-                    FROM Products
-                    ORDER BY Name
-                    """,
-                cancellationToken: cancellationToken));
-
-        return rows.ToList();
+        return await dbContext.Products
+            .AsNoTracking()
+            .OrderBy(p => p.Name)
+            .Select(p => new ProductDto(p.Id, p.Name, p.Description, p.Price, p.Stock))
+            .ToListAsync(cancellationToken);
     }
 }
