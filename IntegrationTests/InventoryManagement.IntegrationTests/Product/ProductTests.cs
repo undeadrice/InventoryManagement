@@ -8,13 +8,27 @@ using Xunit;
 
 namespace InventoryManagement.IntegrationTests.Product;
 
-public class ProductTests : IClassFixture<InventoryWebApplicationFactory>
+public class ProductTests : IClassFixture<InventoryWebApplicationFactory>, IAsyncLifetime
 {
-    private readonly HttpClient _client;
+
+    private readonly InventoryWebApplicationFactory _factory;
+
+    private HttpClient _client;
 
     public ProductTests(InventoryWebApplicationFactory factory)
     {
-        _client = factory.CreateClient();
+        _factory = factory;
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _factory.CreateDatabase();
+        _client = _factory.CreateClient();
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _factory.DeleteDatabase();
     }
 
     // -------------------------------------------------------------------------
