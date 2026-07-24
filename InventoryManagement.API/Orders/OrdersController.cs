@@ -17,10 +17,17 @@ public class OrdersController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpGet] // Dapper - lightweight read
     public async Task<IActionResult> GetOrders()
     {
         var result = await mediator.Send(new GetOrdersQuery());
+        return Ok(result.Select(i => i.MapToOrderResponse()));
+    }
+
+    [HttpGet("legacy")] // EF Core - loads full aggregate
+    public async Task<IActionResult> GetOrdersLegacy()
+    {
+        var result = await mediator.Send(new GetOrdersLegacyQuery());
         return Ok(result.Select(i => i.MapToOrderResponse()));
     }
 
