@@ -29,6 +29,7 @@ public static class DIRegistrations
 
         services.AddScoped<IOrderReadRepository, OrderReadRepository>();
         services.AddScoped<IProductReadRepository, ProductReadRepository>();
+        services.AddScoped<IProductDapperReadRepository, ProductDapperReadRepository>();
 
         return services;
     }
