@@ -6,4 +6,4 @@ using MediatR;
 namespace InventoryManagement.Application.Users.Queries;
 
 [CheckRole(UserRole.Admin)]
-public record GetUsersQuery() : IRequest<IReadOnlyCollection<UserContract>>;
+public record GetUserQuery(Guid Id) : IRequest<UserWithRolesContract>;

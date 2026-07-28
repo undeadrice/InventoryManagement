@@ -16,6 +16,13 @@ public class UsersController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetUser(Guid id)
+    {
+        var result = await mediator.Send(new GetUserQuery(id));
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateUser(CreateUserCommand command)
     {
