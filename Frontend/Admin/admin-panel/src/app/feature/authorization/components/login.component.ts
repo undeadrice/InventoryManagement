@@ -1,5 +1,6 @@
 import { Component, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { SHARED_IMPORTS } from '../../../../shared-module';
 import { AuthorizationService } from '../services/authorization.service';
@@ -25,7 +26,9 @@ export class LoginComponent {
 
   isSubmitting = signal(false);
 
-  isFormInvalid = computed(() => this.loginForm.invalid || this.isSubmitting());
+  private formStatus = toSignal(this.loginForm.statusChanges, { initialValue: this.loginForm.status });
+
+  isFormInvalid = computed(() => this.formStatus() !== 'VALID' || this.isSubmitting());
 
   constructor(
     private router: Router,

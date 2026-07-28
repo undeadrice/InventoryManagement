@@ -4,11 +4,13 @@ import { UnauthorizedLayoutComponent } from './shared/unauthorized/unauthorized-
 import { RoleListcomponent } from './feature/roles/components/list/role-list.component';
 import { UserListComponent } from './feature/users/components/user-list/user-list.component';
 import { LoginComponent } from './feature/authorization/components/login.component';
+import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     component: AuthorizedLayoutComponent,
+    canActivate: [authGuard],
     children: [
       {
         path: 'roles',
