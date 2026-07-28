@@ -23,7 +23,9 @@ public class Product
         Stock = stock;
     }
 
+#pragma warning disable CS8618 // EF Core constructor
     public Product() { }
+#pragma warning restore CS8618
 
     public static Product Create(string name, string description, decimal price, int stock)
     {

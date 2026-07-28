@@ -1,4 +1,5 @@
 using FluentAssertions;
+using InventoryManagement.Application.Auth.Services;
 using InventoryManagement.Application.Orders.Commands;
 using InventoryManagement.Domain.Customers;
 using InventoryManagement.Domain.Customers.Services;
@@ -19,6 +20,7 @@ public class CreateOrderCommandHandlerTests
     private readonly IProductRepository _productRepository;
     private readonly ICustomerRepository _customerRepository;
     private readonly IDiscountCalculator _discountCalculator;
+    private readonly ICurrentUserService _currentUserService;
     private readonly CreateOrderCommandHandler _handler;
 
     public CreateOrderCommandHandlerTests()
@@ -27,11 +29,14 @@ public class CreateOrderCommandHandlerTests
         _productRepository = Substitute.For<IProductRepository>();
         _customerRepository = Substitute.For<ICustomerRepository>();
         _discountCalculator = Substitute.For<IDiscountCalculator>();
+        _currentUserService = Substitute.For<ICurrentUserService>();
+        _currentUserService.CurrentUserId.Returns(Guid.NewGuid());
         _handler = new CreateOrderCommandHandler(
             _orderRepository,
             _productRepository,
             _customerRepository,
-            _discountCalculator);
+            _discountCalculator,
+            _currentUserService);
     }
 
     [Fact]

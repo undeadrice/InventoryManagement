@@ -3,6 +3,7 @@ using InventoryManagement.Application.Products.Services;
 using InventoryManagement.Domain.Customers.Services;
 using InventoryManagement.Domain.Orders.Services;
 using InventoryManagement.Domain.Persistence;
+using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Products.Services;
 using InventoryManagement.Persistence.Customers;
 using InventoryManagement.Persistence.Orders;
@@ -29,6 +30,8 @@ public static class DIRegistrations
 
         services.AddScoped<IOrderReadRepository, OrderReadRepository>();
         services.AddScoped<IProductReadRepository, ProductReadRepository>();
+
+        services.AddScoped(typeof(IUserOwnershipRepository<>), typeof(UserOwnershipRepository<>));
 
         return services;
     }

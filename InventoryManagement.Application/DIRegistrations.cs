@@ -13,6 +13,9 @@ public static class DIRegistrations
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CheckRoleBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CheckPermissionBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OwnedResourceBehavior<,>));
 
         services.AddValidatorsFromAssembly(typeof(DIRegistrations).Assembly);
 

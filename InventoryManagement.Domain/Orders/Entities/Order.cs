@@ -1,10 +1,13 @@
-﻿using InventoryManagement.Domain.Orders.Exceptions;
+﻿using InventoryManagement.Domain.Interfaces;
+using InventoryManagement.Domain.Orders.Exceptions;
 
 namespace InventoryManagement.Domain.Orders.Entities;
 
-public class Order
+public class Order : IUserOwnedEntity
 {
     public Guid Id { get; private set; }
+
+    public Guid UserId { get; private set; }
 
     public Guid CustomerId { get; private set; }
 
@@ -16,16 +19,17 @@ public class Order
 
     public Order() { }
 
-    private Order(Guid id, Guid customerId, List<OrderItem> orderItems, decimal finalPrice)
+    private Order(Guid id, Guid userId, Guid customerId, List<OrderItem> orderItems, decimal finalPrice)
     {
         Id = id;
+        UserId = userId;
         CustomerId = customerId;
         OrderItems = orderItems;
         FinalPrice = finalPrice;
         CreatedAt = DateTime.UtcNow;
     }
 
-    public static Order Create(Guid customerId, List<OrderItem> orderItems, decimal finalPrice)
+    public static Order Create(Guid userId, Guid customerId, List<OrderItem> orderItems, decimal finalPrice)
     {
         if (customerId == Guid.Empty)
         {
@@ -42,7 +46,6 @@ public class Order
             throw new OrderFinalPriceInvalidException();
         }
 
-        return new Order(Guid.NewGuid(), customerId, orderItems, finalPrice);
+        return new Order(Guid.NewGuid(), userId, customerId, orderItems, finalPrice);
     }
 }
-
