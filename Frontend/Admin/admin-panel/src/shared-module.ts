@@ -15,6 +15,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 export const SHARED_IMPORTS = [
   ReactiveFormsModule,
@@ -34,4 +35,5 @@ export const SHARED_IMPORTS = [
   MatDividerModule,
   MatSnackBarModule,
   MatProgressBarModule,
+  MatCheckboxModule,
 ];
