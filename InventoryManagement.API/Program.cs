@@ -1,6 +1,7 @@
 using InventoryManagement.API.Middleware;
 using InventoryManagement.Application;
 using InventoryManagement.Domain;
+using InventoryManagement.Infrastructure;
 using InventoryManagement.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddOpenApi();
 
 builder.Services
     .AddPersistence(builder.Configuration)
+    .AddInfrastructure(builder.Configuration)
     .AddApplication()
     .AddDomain();
 

@@ -1,4 +1,5 @@
 ﻿using InventoryManagement.Domain.Products.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace InventoryManagement.Domain.Products.Entities;
 
@@ -23,6 +24,7 @@ public class Product
         Stock = stock;
     }
 
+    [SuppressMessage("Compiler", "CS8618", Justification = "EF Core constructor")]
     public Product() { }
 
     public static Product Create(string name, string description, decimal price, int stock)
