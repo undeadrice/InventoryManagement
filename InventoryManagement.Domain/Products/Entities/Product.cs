@@ -1,5 +1,4 @@
 ﻿using InventoryManagement.Domain.Products.Exceptions;
-using System.Diagnostics.CodeAnalysis;
 
 namespace InventoryManagement.Domain.Products.Entities;
 
@@ -24,8 +23,9 @@ public class Product
         Stock = stock;
     }
 
-    [SuppressMessage("Compiler", "CS8618", Justification = "EF Core constructor")]
+#pragma warning disable CS8618 // EF Core constructor
     public Product() { }
+#pragma warning restore CS8618
 
     public static Product Create(string name, string description, decimal price, int stock)
     {
