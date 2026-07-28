@@ -1,7 +1,19 @@
 @use '@angular/material' as mat;
 
-:root,
+@include mat.theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$orange-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  )
+);
+
 html {
+  height: 100%;
   @include mat.toolbar-overrides(
     (
       container-background-color: var(--mat-sys-primary-container),
@@ -10,22 +22,8 @@ html {
   );
 }
 
-html {
-  height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
-}
-
 body {
-  color-scheme: light;
+  color-scheme: dark;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
@@ -38,12 +36,30 @@ body {
 }
 
 .bg-dark {
-  background-color: #2c3e50 !important;
-  color: white;
+  background-color: var(--mat-sys-surface) !important;
+  color: var(--mat-sys-on-surface);
+}
+
+.mat-sidenav,
+.mat-drawer {
+  border-radius: 0 !important;
+  border-right: 1px solid var(--mat-sys-outline-variant) !important;
+}
+
+mat-card {
+  border: 1px solid var(--mat-sys-outline-variant) !important;
+}
+
+mat-card-header {
+  padding-bottom: 16px !important;
+}
+
+.mat-mdc-form-field-outline {
+  --mdc-outlined-text-field-outline-color: var(--mat-sys-outline-variant);
 }
 
 .text-light {
-  color: white !important;
+  color: var(--mat-sys-on-surface) !important;
 }
 
 .active-link {
@@ -94,7 +110,7 @@ table {
 }
 
 .snackbar-error {
-  --mdc-snackbar-container-color: #d32f2f;
-  --mdc-snackbar-supporting-text-color: #fff;
-  --mat-snack-bar-button-color: #fff;
+  --mdc-snackbar-container-color: var(--mat-sys-error);
+  --mdc-snackbar-supporting-text-color: var(--mat-sys-on-error);
+  --mat-snack-bar-button-color: var(--mat-sys-on-error);
 }
