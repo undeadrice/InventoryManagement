@@ -1,3 +1,4 @@
+using InventoryManagement.Application.Auth.Models;
 using InventoryManagement.Application.Auth.Services;
 using InventoryManagement.Application.Roles.Services;
 using InventoryManagement.Application.Seeding;
@@ -63,6 +64,13 @@ public static class DIRegistrations
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISeedingService, SeedingService>();
         services.AddScoped<IRoleService, RoleService>();
+
+        var jwtSettings = new JwtSettings(
+            configuration["jwt:Secret"]!,
+            configuration["jwt:Issuer"]!,
+            configuration["jwt:Audience"]!
+        );
+        services.AddSingleton(jwtSettings);
 
         return services;
     }
