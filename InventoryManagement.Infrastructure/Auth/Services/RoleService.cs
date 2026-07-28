@@ -30,6 +30,37 @@ internal class RoleService(InfraIdentityDbContext dbContext, RoleManager<Applica
         return new RoleContract(role.Id, role.Name!, permissions);
     }
 
+    public async Task Update(Guid id, string name, IReadOnlyCollection<string> permissions)
+    {
+        var role = await roleManager.FindByIdAsync(id.ToString());
+
+        if (role == null)
+        {
+            throw new NotFoundException($"Role with id {id} doesn't exist.");
+        }
+
+        role.Name = name;
+        var result = await roleManager.UpdateAsync(role);
+
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(string.Join("; ", result.Errors.Select(e => e.Description)));
+        }
+
+        var existingClaims = await roleManager.GetClaimsAsync(role);
+        var permissionClaims = existingClaims.Where(c => c.Type == "permission").ToList();
+
+        foreach (var claim in permissionClaims)
+        {
+            await roleManager.RemoveClaimAsync(role, claim);
+        }
+
+        foreach (var permission in permissions)
+        {
+            await roleManager.AddClaimAsync(role, new Claim("permission", permission));
+        }
+    }
+
     public async Task<Guid> Create(string name, IReadOnlyCollection<string> permissions)
     {
         var role = new ApplicationRole { Name = name };

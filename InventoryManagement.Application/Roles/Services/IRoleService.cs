@@ -10,4 +10,6 @@ public interface IRoleService
     Task<RoleContract> Get(Guid id);
 
     Task<Guid> Create(string name, IReadOnlyCollection<string> permissions);
+
+    Task Update(Guid id, string name, IReadOnlyCollection<string> permissions);
 }
