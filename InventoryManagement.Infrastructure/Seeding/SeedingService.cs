@@ -18,7 +18,7 @@ public class SeedingService(
             return;
         }
 
-        string[] roles = { "Admin", "User" };
+        string[] roles = { "Admin", "User", "Super admin" };
 
         foreach (var roleName in roles)
         {
@@ -58,6 +58,22 @@ public class SeedingService(
         if (userResult.Succeeded)
         {
             await userManager.AddToRoleAsync(normalUser, "User");
+        }
+
+        var superAdminUser = new ApplicationUser
+        {
+            FirstName = "Super",
+            LastName = "Admin",
+            DateOfBirth = new DateOnly(1994, 7, 18),
+            UserName = "sa@sa.pl",
+            Email = "sa@sa.pl",
+            EmailConfirmed = true
+        };
+
+        var superAdminResult = await userManager.CreateAsync(superAdminUser, "Admin123!");
+        if (superAdminResult.Succeeded)
+        {
+            await userManager.AddToRoleAsync(superAdminUser, "Super admin");
         }
     }
 }
