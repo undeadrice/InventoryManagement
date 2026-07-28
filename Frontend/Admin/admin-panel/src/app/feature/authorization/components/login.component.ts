@@ -1,4 +1,4 @@
-import { Component, computed, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -11,6 +11,9 @@ import { AuthorizationService } from '../services/authorization.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthorizationService);
+
   loginForm = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
@@ -29,11 +32,6 @@ export class LoginComponent {
   private formStatus = toSignal(this.loginForm.statusChanges, { initialValue: this.loginForm.status });
 
   isFormInvalid = computed(() => this.formStatus() !== 'VALID' || this.isSubmitting());
-
-  constructor(
-    private router: Router,
-    private authService: AuthorizationService,
-  ) {}
 
   login(): void {
     if (this.loginForm.invalid) {

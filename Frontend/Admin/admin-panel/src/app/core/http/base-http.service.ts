@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
@@ -9,10 +9,8 @@ import { AuthService } from '../auth/auth.service';
 export class BaseHttpService {
   private readonly baseUrl = 'https://localhost:7047/api';
 
-  constructor(
-    protected http: HttpClient,
-    protected authService: AuthService,
-  ) {}
+  protected readonly http = inject(HttpClient);
+  protected readonly authService = inject(AuthService);
 
   private getHeaders(): HttpHeaders {
     const token = this.authService.getToken();

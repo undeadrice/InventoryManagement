@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
@@ -11,13 +11,13 @@ import { UserSimpleResponse } from '../../models/responses/user-simple.response'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserListComponent {
+  private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
+
   users = new MatTableDataSource<UserSimpleResponse>([]);
   displayedColumns: string[] = ['Email', 'Firstname', 'Lastname', 'actions'];
 
-  constructor(
-    private userService: UserService,
-    private router: Router,
-  ) {
+  constructor() {
     this.userService.getUsers().subscribe((data) => {
       this.users.data = data;
     });
