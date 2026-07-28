@@ -33,9 +33,11 @@ public class DomainExceptionHandler : IExceptionHandler
 
         var (statusCode, title) = exception switch
         {
-            NotFoundException => (StatusCodes.Status404NotFound, "Resource not found"),
-            DomainException   => (StatusCodes.Status400BadRequest, "Invalid request"),
-            _                 => (0, string.Empty)
+            NotFoundException     => (StatusCodes.Status404NotFound, "Resource not found"),
+            ForbiddenException    => (StatusCodes.Status403Forbidden, "Forbidden"),
+            UnauthorizedException => (StatusCodes.Status401Unauthorized, "Unauthorized"),
+            DomainException       => (StatusCodes.Status400BadRequest, "Invalid request"),
+            _                     => (0, string.Empty)
         };
 
         if (statusCode == 0)
