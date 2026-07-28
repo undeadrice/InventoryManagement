@@ -17,6 +17,13 @@ namespace InventoryManagement.API.Products
             return Ok(result.Select(i => i.MapToProductResponse()));
         }
 
+        [HttpPost("seed/{quantity:int}")]
+        public async Task<IActionResult> SeedProducts(int quantity)
+        {
+            var result = await mediator.Send(new SeedProductsCommand(quantity));
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductCommand command)
         {

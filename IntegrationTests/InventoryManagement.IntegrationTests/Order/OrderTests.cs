@@ -11,21 +11,26 @@ using Xunit;
 
 namespace InventoryManagement.IntegrationTests.Order;
 
-public class OrderTests : IAsyncLifetime
+public class OrderTests : IClassFixture<InventoryWebApplicationFactory>, IAsyncLifetime
 {
-    private readonly InventoryWebApplicationFactory _factory = new();
+    private readonly InventoryWebApplicationFactory _factory;
+
     private HttpClient _client = null!;
 
-    public Task InitializeAsync()
+    public OrderTests(InventoryWebApplicationFactory factory)
     {
+        _factory = factory;
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _factory.CreateDatabase();
         _client = _factory.CreateClient();
-        return Task.CompletedTask;
     }
 
     public async Task DisposeAsync()
     {
-        _client.Dispose();
-        await _factory.DisposeAsync();
+        await _factory.DeleteDatabase();
     }
 
     private async Task<Guid> CreateProductAsync(string name = "Test Product", string description = "A product", decimal price = 10.00m, int stock = 100)
