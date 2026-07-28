@@ -1,4 +1,3 @@
-using InventoryManagement.Application.Roles.Contracts;
 using InventoryManagement.Application.Roles.Dtos;
 using InventoryManagement.Application.Roles.Services;
 using InventoryManagement.Infrastructure.Auth.Entities;
@@ -15,7 +14,7 @@ internal class RoleService(InfraIdentityDbContext dbContext, RoleManager<Applica
     {
         return await dbContext.Roles.Select(r => new RoleSimpleDto(r.Id, r.Name)).ToListAsync();
     }
-    public async Task<RoleContract> Get(Guid id)
+    public async Task<RoleDto> Get(Guid id)
     {
         var role = await roleManager.FindByIdAsync(id.ToString());
 
@@ -27,7 +26,7 @@ internal class RoleService(InfraIdentityDbContext dbContext, RoleManager<Applica
         var claims = await roleManager.GetClaimsAsync(role);
         var permissions = claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
 
-        return new RoleContract(role.Id, role.Name!, permissions);
+        return new RoleDto(role.Id, role.Name!, permissions);
     }
 
     public async Task Update(Guid id, string name, IReadOnlyCollection<string> permissions)
