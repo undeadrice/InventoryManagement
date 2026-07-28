@@ -10,6 +10,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+
+      console.log(error);
+
       if (error.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('token-valid-to');
@@ -33,21 +36,5 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 };
 
 function extractErrorMessage(error: HttpErrorResponse): string {
-  if (typeof error.error === 'string') {
-    return error.error;
-  }
-
-  if (error.error?.detail) {
-    return error.error.detail;
-  }
-
-  if (error.error?.title) {
-    return error.error.title;
-  }
-
-  if (error.message) {
-    return error.message;
-  }
-
-  return 'An unexpected error occurred.';
+  return error.error.detail ?? 'An unexpected error occurred.';
 }

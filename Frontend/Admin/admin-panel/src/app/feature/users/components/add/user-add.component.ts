@@ -99,9 +99,6 @@ export class UserAddComponent implements OnInit {
           this.router.navigate(['/users']);
         },
         error: () => {
-          this.snackBar.open('Failed to create user', 'Close', {
-            duration: 5000,
-          });
           this.submitting.set(false);
         },
       });

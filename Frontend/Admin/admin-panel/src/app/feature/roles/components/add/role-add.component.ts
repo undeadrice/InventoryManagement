@@ -99,9 +99,6 @@ export class RoleAddComponent implements OnInit {
           this.router.navigate(['/roles']);
         },
         error: () => {
-          this.snackBar.open('Failed to create role', 'Close', {
-            duration: 5000,
-          });
           this.submitting.set(false);
         },
       });
