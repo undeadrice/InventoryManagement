@@ -23,7 +23,9 @@ internal class AuthService(UserManager<ApplicationUser> userManager, JwtSettings
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email!)
+            new Claim(ClaimTypes.Email, user.Email!),
+            new Claim(ClaimTypes.GivenName, user.FirstName),
+            new Claim(ClaimTypes.Surname, user.LastName)
         };
 
         var roles = await userManager.GetRolesAsync(user);

@@ -1,6 +1,9 @@
 <mat-toolbar>
   <span>Inventory Management</span>
   <span class="flex-spacer"></span>
+  @if (authService.fullName(); as fullName) {
+    <span class="me-2">{{ fullName }}</span>
+  }
   <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="User menu">
     <mat-icon>more_vert</mat-icon>
   </button>

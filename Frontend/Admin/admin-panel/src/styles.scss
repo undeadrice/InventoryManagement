@@ -23,7 +23,6 @@ html {
 }
 
 body {
-  color-scheme: dark;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
@@ -35,20 +34,12 @@ body {
   flex: 1 1 auto;
 }
 
-.bg-dark {
-  background-color: var(--mat-sys-surface) !important;
-  color: var(--mat-sys-on-surface);
-}
-
-.mat-sidenav,
-.mat-drawer {
+mat-sidenav,
+mat-drawer {
   border-radius: 0 !important;
   border-right: 1px solid var(--mat-sys-outline-variant) !important;
 }
 
-mat-card {
-  border: 1px solid var(--mat-sys-outline-variant) !important;
-}
 
 mat-card-header {
   padding-bottom: 16px !important;
@@ -109,8 +100,27 @@ table {
   width: 100%;
 }
 
-.snackbar-error {
-  --mdc-snackbar-container-color: var(--mat-sys-error);
-  --mdc-snackbar-supporting-text-color: var(--mat-sys-on-error);
-  --mat-snack-bar-button-color: var(--mat-sys-on-error);
+mat-nav-list mat-list-item span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.permissions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (max-width: 960px) {
+  .permissions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .permissions-grid {
+    grid-template-columns: 1fr;
+  }
 }

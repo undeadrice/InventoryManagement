@@ -1,7 +1,7 @@
 @if (loading()) {
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 } @else {
-  <mat-card style="max-width: 600px; margin: 0 auto">
+  <mat-card style="max-width: 1200px; margin: 0 auto">
     <mat-card-header>
       <mat-card-title-group>
         <mat-card-title>Create role</mat-card-title>
@@ -27,22 +27,24 @@
           </mat-card-content>
         </mat-card>
 
-        @for (group of permissionGroups(); track group.groupName) {
-          <mat-card style="margin-top: 16px">
-            <mat-card-header>
-              <mat-card-title>{{ group.groupName }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content formGroupName="permissions">
-              @for (permission of group.permissions; track permission) {
-                <div>
-                  <mat-checkbox [formControlName]="permission">
-                    {{ permission }}
-                  </mat-checkbox>
-                </div>
-              }
-            </mat-card-content>
-          </mat-card>
-        }
+        <div formGroupName="permissions" class="permissions-grid">
+          @for (group of permissionGroups(); track group.groupName) {
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>{{ group.groupName }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                @for (permission of group.permissions; track permission) {
+                  <div>
+                    <mat-checkbox [formControlName]="permission">
+                      {{ permission }}
+                    </mat-checkbox>
+                  </div>
+                }
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
 
         <div style="margin-top: 16px; display: flex; gap: 8px">
           <button
