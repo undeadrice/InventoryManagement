@@ -11,6 +11,7 @@ public class OrderTests
     public void Create_WithValidData_ShouldCreateOrder()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var customerId = Guid.NewGuid();
         var finalPrice = 200m;
         var orderItems = new List<OrderItem>
@@ -18,14 +19,14 @@ public class OrderTests
             OrderItem.Create(Guid.NewGuid(), 2, 50m),
             OrderItem.Create(Guid.NewGuid(), 1, 100m)
         };
- 
 
         // Act
-        var order = Order.Create(customerId, orderItems, finalPrice);
+        var order = Order.Create(userId, customerId, orderItems, finalPrice);
 
         // Assert
         order.Should().NotBeNull();
         order.Id.Should().NotBe(Guid.Empty);
+        order.UserId.Should().Be(userId);
         order.CustomerId.Should().Be(customerId);
         order.OrderItems.Should().HaveCount(2);
         order.FinalPrice.Should().Be(finalPrice);
@@ -36,10 +37,11 @@ public class OrderTests
     public void Create_WithEmptyCustomerId_ShouldThrowOrderCustomerIdRequiredException()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var orderItems = new List<OrderItem> { OrderItem.Create(Guid.NewGuid(), 1, 50m) };
 
         // Act
-        var act = () => Order.Create(Guid.Empty, orderItems, 50m);
+        var act = () => Order.Create(userId, Guid.Empty, orderItems, 50m);
 
         // Assert
         act.Should().Throw<OrderCustomerIdRequiredException>();
@@ -49,7 +51,7 @@ public class OrderTests
     public void Create_WithNullOrderItems_ShouldThrowOrderItemsRequiredException()
     {
         // Act
-        var act = () => Order.Create(Guid.NewGuid(), null!, 50m);
+        var act = () => Order.Create(Guid.NewGuid(), Guid.NewGuid(), null!, 50m);
 
         // Assert
         act.Should().Throw<OrderItemsRequiredException>();
@@ -59,7 +61,7 @@ public class OrderTests
     public void Create_WithEmptyOrderItems_ShouldThrowOrderItemsRequiredException()
     {
         // Act
-        var act = () => Order.Create(Guid.NewGuid(), new List<OrderItem>(), 50m);
+        var act = () => Order.Create(Guid.NewGuid(), Guid.NewGuid(), new List<OrderItem>(), 50m);
 
         // Assert
         act.Should().Throw<OrderItemsRequiredException>();
@@ -69,11 +71,12 @@ public class OrderTests
     public void Create_WithNegativeFinalPrice_ShouldThrowOrderFinalPriceInvalidException()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var customerId = Guid.NewGuid();
         var orderItems = new List<OrderItem> { OrderItem.Create(Guid.NewGuid(), 1, 50m) };
 
         // Act
-        var act = () => Order.Create(customerId, orderItems, -10m);
+        var act = () => Order.Create(userId, customerId, orderItems, -10m);
 
         // Assert
         act.Should().Throw<OrderFinalPriceInvalidException>();
@@ -83,14 +86,16 @@ public class OrderTests
     public void Create_WithZeroFinalPrice_ShouldCreateOrderSuccessfully()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var customerId = Guid.NewGuid();
         var orderItems = new List<OrderItem> { OrderItem.Create(Guid.NewGuid(), 1, 50m) };
 
         // Act
-        var order = Order.Create(customerId, orderItems, 0m);
+        var order = Order.Create(userId, customerId, orderItems, 0m);
 
         // Assert
         order.Should().NotBeNull();
+        order.UserId.Should().Be(userId);
         order.FinalPrice.Should().Be(0m);
     }
 
@@ -98,6 +103,7 @@ public class OrderTests
     public void Create_WithMultipleOrderItems_ShouldContainAllItems()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var customerId = Guid.NewGuid();
         var item1 = OrderItem.Create(Guid.NewGuid(), 2, 50m);
         var item2 = OrderItem.Create(Guid.NewGuid(), 3, 30m);
@@ -105,7 +111,7 @@ public class OrderTests
         var orderItems = new List<OrderItem> { item1, item2, item3 };
 
         // Act
-        var order = Order.Create(customerId, orderItems, 300m);
+        var order = Order.Create(userId, customerId, orderItems, 300m);
 
         // Assert
         order.OrderItems.Should().HaveCount(3);

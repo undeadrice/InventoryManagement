@@ -1,3 +1,4 @@
+using InventoryManagement.Application.Auth.Services;
 using InventoryManagement.Domain.Customers.Services;
 using InventoryManagement.Domain.Orders.Entities;
 using InventoryManagement.Domain.Orders.Exceptions;
@@ -11,7 +12,8 @@ public class CreateOrderCommandHandler(
     IOrderRepository orderRepository,
     IProductRepository productRepository,
     ICustomerRepository customerRepository,
-    IDiscountCalculator discountCalculator) : IRequestHandler<CreateOrderCommand, Guid>
+    IDiscountCalculator discountCalculator,
+    ICurrentUserService currentUserService) : IRequestHandler<CreateOrderCommand, Guid>
 {
     public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
@@ -35,9 +37,11 @@ public class CreateOrderCommandHandler(
             await productRepository.Update(product, cancellationToken);
         }
 
+        var userGuid = currentUserService.CurrentUserId ?? throw new UnauthorizedAccessException();
+
         var lineItems = orderItems.Select(i => new OrderLineItem(i.UnitPrice, i.Quantity));
         var finalPrice = discountCalculator.CalculateDiscount(lineItems, customer.Location, DateTime.UtcNow);
-        var order = Order.Create(customer.Id, orderItems, finalPrice);
+        var order = Order.Create(userGuid, customer.Id, orderItems, finalPrice);
 
         foreach (var item in order.OrderItems)
         {
