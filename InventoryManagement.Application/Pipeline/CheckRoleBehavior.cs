@@ -20,6 +20,16 @@ public class CheckRoleBehavior<TRequest, TResponse>(ICurrentUserService currentU
             return await next();
         }
 
+        if (!currentUserService.IsAuthenticated)
+        {
+            throw new UnauthorizedException();
+        }
+
+        if (await currentUserService.IsSuperAdmin())
+        {
+            return await next();
+        }
+
         foreach (var role in attribute.Roles)
         {
             if (!await currentUserService.IsInRole(role))

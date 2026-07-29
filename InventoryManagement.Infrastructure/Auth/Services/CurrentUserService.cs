@@ -22,12 +22,22 @@ internal class CurrentUserService(
         }
     }
 
+    public bool IsAuthenticated => httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+
     public async Task<bool> IsInRole(UserRole role)
     {
         var user = httpContextAccessor.HttpContext?.User;
         if (user is null) return false;
 
         return await Task.FromResult(user.IsInRole(role.ToString()));
+    }
+
+    public async Task<bool> IsSuperAdmin()
+    {
+        var user = httpContextAccessor.HttpContext?.User;
+        if (user is null) return false;
+
+        return await Task.FromResult(user.IsInRole("Super admin"));
     }
 
     public async Task<bool> HasPermissions(params Permission[] permissions)

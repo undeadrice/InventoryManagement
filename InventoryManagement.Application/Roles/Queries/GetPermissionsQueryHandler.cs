@@ -10,6 +10,7 @@ internal class GetPermissionsQueryHandler
     [
         new PermissionGroupDto("Role", ["RoleCreate", "RoleEdit", "RoleDelete", "RoleView"]),
         new PermissionGroupDto("User", ["UserCreate", "UserEdit", "UserDelete", "UserView"]),
+        new PermissionGroupDto("Permissions", ["PermissionView"]),
     ];
 
     public Task<IReadOnlyCollection<PermissionGroupDto>> Handle(GetPermissionsQuery request, CancellationToken cancellationToken)

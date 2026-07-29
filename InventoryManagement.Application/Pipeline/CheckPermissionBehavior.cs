@@ -20,6 +20,16 @@ public class CheckPermissionBehavior<TRequest, TResponse>(ICurrentUserService cu
             return await next();
         }
 
+        if (!currentUserService.IsAuthenticated)
+        {
+            throw new UnauthorizedException();
+        }
+
+        if (await currentUserService.IsSuperAdmin())
+        {
+            return await next();
+        }
+
         if (!await currentUserService.HasPermissions(attribute.Permissions))
         {
             throw new ForbiddenException();

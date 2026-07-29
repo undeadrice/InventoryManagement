@@ -12,6 +12,9 @@ namespace InventoryManagement.Application.Users.Enums
         UserCreate,
         UserEdit,
         UserDelete,
-        UserView
+        UserView,
+
+        // Permissions
+        PermissionView
     }
 }

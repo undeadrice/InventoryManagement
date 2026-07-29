@@ -5,5 +5,5 @@ using MediatR;
 
 namespace InventoryManagement.Application.Roles.Queries;
 
-[CheckRole(UserRole.Admin)]
+[CheckPermission(Permission.PermissionView)]
 public record GetPermissionsQuery() : IRequest<IReadOnlyCollection<PermissionGroupDto>>;

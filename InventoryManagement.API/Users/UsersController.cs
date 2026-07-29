@@ -29,4 +29,11 @@ public class UsersController(IMediator mediator) : ControllerBase
         await mediator.Send(command);
         return Ok();
     }
+
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateUser(UpdateUserCommand command)
+    {
+        await mediator.Send(command);
+        return Ok();
+    }
 }
