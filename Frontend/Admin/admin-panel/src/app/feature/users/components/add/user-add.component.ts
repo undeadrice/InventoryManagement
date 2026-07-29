@@ -62,9 +62,6 @@ export class UserAddComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.snackBar.open('Failed to load roles', 'Close', {
-          duration: 5000,
-        });
         this.loading.set(false);
       },
     });
