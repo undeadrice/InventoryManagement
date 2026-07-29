@@ -27,7 +27,7 @@ public class OwnedResourceBehavior<TRequest, TResponse>(
 
         if (!isOwner)
         {
-            throw new UnauthorizedException();
+            throw new ForbiddenException();
         }
 
         return await next(cancellationToken);
