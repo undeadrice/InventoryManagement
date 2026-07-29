@@ -1,6 +1,8 @@
 This project is a sample implementation of an inventory and order management system built with ASP.NET Core using Clean Architecture and CQRS principles.
 
-It demonstrates how to structure a modular backend system with clear separation of concerns between domain logic, application workflows, persistence, and API exposure. The system supports product and order management with business rules around stock handling, pricing, and discount application.
+It demonstrates how to structure a modular backend system with clear separation of concerns between domain logic, application workflows, infrastructure, persistence, and API exposure. The system supports product and order management with business rules around stock handling, pricing, and discount application.
+
+The frontend is implemented as angular app. However it will be moved to different repository.
 
 # Key Features
 - Product management (create and list products)
@@ -14,10 +16,10 @@ It demonstrates how to structure a modular backend system with clear separation 
 The solution follows Clean Architecture with a Domain-Driven Design approach:
 
 - Domain Layer – Core business entities and rules
-- Application Layer – CQRS-based use cases implemented with MediatR
+- Application Layer – CQRS-based use cases implemented with MediatR. Cross-cutting concerns (eg. Auth) implemented as pipeline behaviours.
 - Persistence Layer – EF Core implementation with repository and unit of work patterns
 - API Layer – REST endpoints exposing application functionality
-- Infrastructure Layer – Reserved for external integrations (not heavily utilized)
+- Infrastructure Layer – Authorization / Identity
 
 Cross-cutting concerns such as validation and transaction handling are implemented via MediatR pipeline behaviors.
 

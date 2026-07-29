@@ -22,6 +22,8 @@ internal class CurrentUserService(
         }
     }
 
+    public bool IsAuthenticated => httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+
     public async Task<bool> IsInRole(UserRole role)
     {
         var user = httpContextAccessor.HttpContext?.User;
